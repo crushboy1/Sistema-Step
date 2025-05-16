@@ -1,0 +1,136 @@
+/* Estilo general para el cuerpo */
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #6a11cb, #2575fc); /* Fondo de gradiente suave */
+    color: #333;
+    margin: 0;
+    padding: 0;
+    height: 100vh; /* Asegura que cubra toda la pantalla */
+}
+
+/* Contenedor principal del formulario */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding-top: 50px;
+    background: rgba(255, 255, 255, 0.8); /* Fondo blanco con transparencia */
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Sombra para darle profundidad */
+    padding: 30px;
+}
+
+/* Estilo del título */
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #007bff;
+    font-size: 2rem;
+}
+
+/* Estilos del formulario */
+form {
+    background: rgba(255, 255, 255, 0.9); /* Fondo del formulario ligeramente transparente */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos de las etiquetas y campos de entrada */
+label {
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #007bff;
+    display: block;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.3); /* Fondo completamente transparente para los campos */
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus {
+    border-color: #007bff;
+    outline: none;
+    background: rgba(255, 255, 255, 0.5); /* Un toque de blanco cuando el campo es enfocado */
+}
+
+/* Estilo para el botón */
+button[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background-color: #28a745;
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button[type="submit"]:hover {
+    background-color: #218838;
+}
+
+/* Estilo de los mensajes flash */
+ul.list-unstyled {
+    margin-bottom: 30px;
+}
+
+.alert {
+    font-size: 16px;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
+}
+
+/* Enlace de volver */
+a.btn-secondary {
+    display: inline-block;
+    margin-top: 20px;
+    text-align: center;
+    padding: 12px 20px;
+    background-color: #6c757d;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+}
+
+a.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+    .container {
+        width: 90%;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    button[type="submit"] {
+        font-size: 16px;
+    }
+}

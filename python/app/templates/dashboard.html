@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Proyectos</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+      body {
+          background-color: #f0f2f5;
+      }
+      header {
+          background-color: #007BFF;
+          color: white;
+          padding: 15px 25px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .logout-btn {
+          background-color: #FF4D4D;
+          color: white;
+          border-radius: 5px;
+          transition: background-color 0.3s ease-in-out;
+      }
+      .logout-btn:hover {
+          background-color: #CC0000;
+      }
+      .card {
+          transition: transform 0.3s ease-in-out;
+      }
+      .card:hover {
+          transform: scale(1.05);
+      }
+      .error {
+          color: red;
+          text-align: center;
+          margin: 20px;
+          font-size: 16px;
+      }
+  </style>
+</head>
+<body>
+
+  <!-- Header con título y botón de logout -->
+  <header class="d-flex justify-content-between align-items-center">
+      <h1 class="h4">Dashboard - Proyectos</h1>
+      <a href="/logout" class="btn logout-btn">Cerrar Sesión</a>
+  </header>
+
+  <!-- Botones para acciones principales -->
+  <div class="text-center my-4">
+      <a href="/proyecto/nuevo" class="btn btn-primary">Nuevo Proyecto</a>
+      <a href="http://127.0.0.1:5000/estudiantes" class="btn btn-primary">Ir a la aplicación de Estudiantes</a>
+  </div>
+
+  {% if error %}
+      <p class="error">{{ error }}</p>
+  {% else %}
+      <div class="container">
+          <div class="row">
+              {% for project in projects %}
+                  <div class="col-md-4 mb-4">
+                      <div class="card">
+                          <div class="card-body">
+                              <h2 class="card-title">{{ project['nombre'] }}</h2> <!-- Nombre del proyecto -->
+                              <p><strong>ID:</strong> {{ project['id_proyecto'] }}</p> <!-- ID del proyecto -->
+                              <p><strong>Descripción:</strong> {{ project['descripcion'] }}</p> <!-- Descripción del proyecto -->
+                          </div>
+                          <div class="card-footer d-flex justify-content-between">
+                              <span>Responsable: {{ project['nombre_admin'] }}</span> <!-- Responsable del proyecto -->
+                              <span><strong>Fecha:</strong> {{ project['fecha_creacion'] }}</span> <!-- Fecha de creación -->
+                              <!-- Formulario para eliminar el proyecto -->
+                              <form action="{{ url_for('eliminar_proyecto', project_id=project['id_proyecto']) }}" method="POST" style="display:inline;">
+                                  <button type="submit" class="btn btn-danger">Eliminar Proyecto</button>
+                              </form>
+                          </div>
+                      </div>
+                  </div>
+              {% endfor %}
+          </div>
+      </div>
+  {% endif %}
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Cursos{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="text-center my-4">Lista de Cursos</h2>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <!-- Buscador -->
+    <div class="row mb-4">
+        <div class="col-md-8 mx-auto">
+            <form method="GET" action="{{ url_for('cursos') }}" class="d-flex">
+                <input type="text" name="q" class="form-control me-2" placeholder="Buscar por nombre o descripción" value="{{ request.args.get('q', '') }}">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-search"></i> Buscar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Botón para agregar curso -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <a href="{{ url_for('nuevo_curso') }}" class="btn btn-success">
+            <i class="fa fa-plus"></i> Agregar Nuevo Curso
+        </a>
+    </div>
+
+    <!-- Contenedor de tarjetas -->
+    <div class="row">
+        {% if cursos %}
+            {% for curso in cursos %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ curso.nombre }}</h5>
+                        <p class="card-text">
+                            <strong>Descripción:</strong> {{ curso.descripcion }}<br>
+                            <strong>Créditos:</strong> {{ curso.creditos }}
+                        </p>
+                        <div class="d-flex justify-content-around">
+                            <!-- Icono de Ver -->
+                            <a href="{{ url_for('ver_curso', id=curso.id) }}" class="btn btn-outline-primary btn-sm">
+                                <i class="fa fa-eye"></i> Ver
+                            </a>
+                            <!-- Icono de Editar -->
+                            <a href="{{ url_for('editar_curso', id=curso.id) }}" class="btn btn-outline-warning btn-sm">
+                                <i class="fa fa-pencil-alt"></i> Editar
+                            </a>
+                            <!-- Icono de Eliminar -->
+                            <form method="POST" action="{{ url_for('eliminar_curso', id=curso.id) }}" style="display: inline;">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                    <i class="fa fa-trash"></i> Eliminar
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-center">No se encontraron cursos con ese criterio de búsqueda.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

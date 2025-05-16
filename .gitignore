@@ -1,0 +1,22 @@
+/vendor
+/node_modules
+/.env
+/storage/*.key
+/public/storage
+/.idea
+.DS_Store
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+# Directorios de logs, si los tienes
+/logs/
+# Archivos de configuración local
+*.env

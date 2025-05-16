@@ -1,0 +1,107 @@
+/* Reset basic styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-image: url('/static/img/2.jpeg'); /* Imagen de fondo */
+    background-size: cover; /* Cubrir toda la pantalla */
+    color: #333; /* Color del texto */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+    flex-direction: column;
+}
+
+/* Container for centering content */
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Styling for the header */
+h1 {
+    color: #00aaff; /* Color celeste */
+    font-size: 36px;
+    margin-bottom: 20px;
+}
+
+/* Styling for links */
+a {
+    text-decoration: none;
+    color: #ffcc00; /* Color amarillo */
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+a:hover {
+    color: #ff9900; /* Amarillo más oscuro al pasar el cursor */
+}
+
+/* Button style for login */
+button {
+    background-color: #00aaff; /* Fondo celeste */
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0088cc; /* Celeste más oscuro */
+}
+
+/* Form styling */
+form {
+    background-color: rgba(255, 255, 255, 0.7); /* Fondo blanco con transparencia */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Input fields styling */
+form input[type="email"],
+form input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+/* Submit button styling */
+form input[type="submit"] {
+    background-color: #00aaff; /* Botón celeste */
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 8px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+form input[type="submit"]:hover {
+    background-color: #0088cc; /* Botón más oscuro al pasar el cursor */
+}
+
+/* Captcha styling */
+.g-recaptcha {
+    margin: 20px 0;
+}

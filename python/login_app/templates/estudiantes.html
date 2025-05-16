@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Estudiantes{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="text-center my-4">Lista de Estudiantes</h2>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
+
+    <div class="user-info-bar" style="margin-bottom: 20px; padding: 10px 0; border-bottom: 1px solid #ccc; display: flex; justify-content: space-between; align-items: center; font-size: 18px; color: #555;">
+        <span style="font-weight: bold; color: #333;">Usuario: {{ user_name }}</span>
+        <span style="font-weight: bold; color: #333;">Fecha: {{ current_date }}</span>
+        <span style="font-weight: bold; color: #333;">Hora: {{ current_time }}</span>
+    </div>
+    <!-- Buscador -->
+    <div class="row mb-4">
+        <div class="col-md-8 mx-auto">
+            <form method="GET" action="{{ url_for('estudiantes') }}" class="d-flex">
+                <input type="text" name="q" class="form-control me-2" placeholder="Buscar por nombre o apellido" value="{{ request.args.get('q', '') }}">
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Botón para agregar estudiante -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <a href="{{ url_for('nuevo_estudiante') }}" class="btn btn-success">Agregar Nuevo Estudiante</a>
+    </div>
+
+    <!-- Contenedor de tarjetas -->
+    <div class="row">
+        {% if estudiantes %}
+            {% for estudiante in estudiantes %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ estudiante.nombre }} {{ estudiante.apellido }}</h5>
+                        <p class="card-text"><strong>Edad:</strong> {{ estudiante.edad }}</p>
+                        <div class="d-flex justify-content-around">
+                            <!-- Icono de Ver -->
+                            <a href="{{ url_for('ver_estudiante', id=estudiante.id) }}" class="btn btn-outline-primary btn-sm">
+                                <i class="fa fa-eye"></i> Ver
+                            </a>
+                            <!-- Icono de Editar -->
+                            <a href="{{ url_for('editar_estudiante', id=estudiante.id) }}" class="btn btn-outline-warning btn-sm">
+                                <i class="fa fa-pencil-alt"></i> Editar
+                            </a>
+                            <!-- Icono de Eliminar -->
+                            <form method="POST" action="{{ url_for('eliminar_estudiante', id=estudiante.id) }}" style="display: inline;">
+                                <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar a este estudiante?');">
+                                    <i class="fa fa-trash"></i> Eliminar
+                                </button>
+                            </form>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+            </div>
+
+            
+            {% endfor %}
+        {% else %}
+            <p class="text-center">No se encontraron estudiantes con ese criterio de búsqueda.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

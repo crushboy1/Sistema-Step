@@ -1,0 +1,129 @@
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registrar Usuario</title>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    {# Asegúrate de que registerstyles.css exista en static/css #}
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/registerstyles.css') }}"
+    />
+    <style>
+      /* Estilos básicos para los mensajes flash si no están en registerstyles.css */
+      .flashes {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 20px;
+        text-align: center; /* Centrar los mensajes */
+      }
+      .flashes li {
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+        color: #333; /* Color de texto por defecto */
+        background-color: #f8d7da; /* Fondo para errores (rojo claro) */
+        border: 1px solid #f5c6cb; /* Borde para errores */
+        max-width: 400px; /* Limitar ancho para que no se extiendan demasiado */
+        margin-left: auto; /* Centrar con auto margins */
+        margin-right: auto; /* Centrar con auto margins */
+        white-space: pre-wrap; /* Permitir saltos de línea en mensajes formateados */
+        text-align: left; /* Alinear texto a la izquierda dentro del mensaje */
+      }
+      /* Puedes añadir clases específicas si flasheas mensajes con categorías (ej. flash('Mensaje', 'success')) */
+      .flashes li.success {
+        background-color: #d4edda; /* Fondo para éxito (verde claro) */
+        border-color: #c3e6cb;
+        color: #155724;
+      }
+      .flashes li.warning {
+        background-color: #fff3cd; /* Fondo para advertencias (amarillo claro) */
+        border-color: #ffecb5;
+        color: #664d03;
+      }
+      .flashes li.error {
+        /* Ya definidos arriba para el caso general */
+        color: #721c24;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2 class="title">Crear cuenta</h2>
+      <p class="description">
+        Regístrate para obtener acceso a todas las funcionalidades.
+      </p>
+
+      {# Este bloque recupera y muestra los mensajes flasheados desde app.py #}
+      {% with messages = get_flashed_messages() %} {% if messages %}
+      <ul class="flashes">
+        {% for message in messages %} {# Si usas categorías con flash (ej.
+        flash('Mensaje', 'success')), puedes añadir la clase: #} {#
+        <li class="{{ category }}">{{ message }}</li>
+        #}
+        <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %} {% endwith %}
+
+      <form action="{{ url_for('register') }}" method="POST">
+        <div class="form-group">
+          <label for="nombre">Nombre completo</label>
+          <input
+            type="text"
+            id="nombre"
+            name="nombre"
+            placeholder="Ej. Juan Pérez"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Correo electrónico</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="ejemplo@correo.com"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Crea una contraseña"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password_confirmation">Confirmar contraseña</label>
+          <input
+            type="password"
+            id="password_confirmation"
+            name="password_confirmation"
+            placeholder="Repite la contraseña"
+            required
+          />
+        </div>
+
+        {# Asegúrate de que recaptcha_site_key se pasa a la plantilla desde
+        app.py #}
+        <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
+
+        <div class="form-actions">
+          <button type="submit" class="submit-btn">Registrar cuenta</button>
+        </div>
+
+        <p class="footer-text">
+          ¿Ya tienes una cuenta?
+          <a href="{{ url_for('login') }}">Inicia sesión</a>
+        </p>
+      </form>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,126 @@
+/* Estilos Generales */
+body {
+    background: linear-gradient(to right, #00c6ff, #0072ff); /* Fondo degradado azul */
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* Contenedor principal */
+.container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Título */
+h2 {
+    text-align: center;
+    font-size: 28px;
+    color: #0072ff;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+/* Formulario */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Estilo para las etiquetas y campos del formulario */
+label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+input[type="text"], input[type="number"], select {
+    padding: 12px;
+    font-size: 16px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    margin-top: 5px;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s ease;
+}
+
+/* Estilo del campo de texto y número al enfocarse */
+input[type="text"]:focus, input[type="number"]:focus, select:focus {
+    border-color: #0072ff;
+    outline: none;
+}
+
+/* Botón de Submit */
+button[type="submit"] {
+    background-color: #0072ff; /* Azul */
+    color: white;
+    padding: 14px 25px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3; /* Azul más oscuro */
+    transform: scale(1.05);
+}
+
+button[type="submit"]:active {
+    background-color: #004085;
+    transform: scale(1);
+}
+
+/* Espaciado y organización */
+br {
+    margin-bottom: 15px;
+}
+
+/* Mensajes de error */
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+    text-align: center;
+}
+
+/* Estilo de la selección de curso */
+select {
+    padding: 12px;
+    font-size: 16px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s ease;
+}
+
+/* Añadir borde azul al seleccionar curso */
+select:focus {
+    border-color: #0072ff;
+    outline: none;
+}
+
+/* Estilo general para inputs con foco y en formulario de edición */
+input[type="text"], input[type="number"], select {
+    font-size: 16px;
+}
+
+/* Margen y relleno para un diseño limpio y ordenado */
+.container {
+    padding: 40px 60px;
+}
+
+button[type="submit"] {
+    font-size: 18px;
+    padding: 15px 30px;
+}

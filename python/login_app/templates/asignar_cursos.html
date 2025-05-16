@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Asignar Cursos{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="text-center my-4">Asignar Cursos a {{ estudiante.nombre }} {{ estudiante.apellido }}</h2>
+    <form method="POST" action="{{ url_for('asignar_cursos', id=estudiante.id) }}">
+        <div class="mb-4">
+            <label for="cursos" class="form-label">Selecciona los cursos:</label>
+            <select name="cursos" id="cursos" class="form-select" multiple>
+                {% for curso in cursos %}
+                <option value="{{ curso.id }}" 
+                    {% if curso.id in estudiante.cursos_ids %} selected {% endif %}>
+                    {{ curso.nombre }} ({{ curso.descripcion }})
+                </option>
+                {% endfor %}
+            </select>
+            <small class="form-text text-muted">Mantén presionada la tecla Ctrl (o Cmd) para seleccionar múltiples cursos.</small>
+        </div>
+        <button type="submit" class="btn btn-primary">
+            <i class="fa fa-save"></i> Guardar
+        </button>
+        <a href="{{ url_for('ver_estudiante', id=estudiante.id) }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

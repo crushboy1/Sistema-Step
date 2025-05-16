@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Detalles del Curso{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center">Detalles del Curso</h2>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title"><strong>Nombre:</strong> {{ curso.nombre }}</h5>
+            <p class="card-text"><strong>Descripción:</strong> {{ curso.descripcion }}</p>
+            <p class="card-text"><strong>Créditos:</strong> {{ curso.creditos }}</p>
+        </div>
+    </div>
+    <a href="{{ url_for('cursos') }}" class="btn btn-secondary mt-3">Volver a la lista de cursos</a>
+</div>
+{% endblock %}

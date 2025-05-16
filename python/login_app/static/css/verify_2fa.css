@@ -1,0 +1,151 @@
+
+body {
+  font-family: sans-serif; 
+  background-image: url("/static/img/2.jpeg"); 
+  background-color: #f0f2f5; 
+  background-repeat: no-repeat; 
+  background-size: cover; 
+  background-attachment: fixed; 
+  background-position: center; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  min-height: 100vh; 
+  margin: 0; 
+  padding: 20px; 
+  box-sizing: border-box; 
+}
+
+
+.verification-container {
+  background-color: #ffffff; 
+  padding: 30px; 
+  border-radius: 8px; 
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); 
+  text-align: center; 
+  max-width: 400px; 
+  width: 100%; 
+}
+
+.verification-container h2 {
+  margin-top: 0; 
+  margin-bottom: 20px; 
+  color: #333; 
+  font-size: 24px; 
+}
+
+.verification-container p {
+  margin-bottom: 20px; 
+  color: #555; 
+  font-size: 16px; 
+}
+
+
+.flashes {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 20px;
+}
+
+.flashes li {
+  padding: 12px; 
+  margin-bottom: 10px;
+  border-radius: 4px;
+  color: #333;
+  background-color: #f8d7da; 
+  border: 1px solid #f5c6cb;
+  text-align: left; 
+  white-space: pre-wrap; 
+  font-size: 14px; 
+}
+
+
+.flashes li.success {
+  background-color: #d4edda; 
+  border-color: #c3e6cb;
+  color: #155724; 
+}
+
+.flashes li.error {
+  background-color: #f8d7da; 
+  border-color: #f5c6cb;
+  color: #721c24; 
+}
+
+.flashes li.warning {
+  background-color: #fff3cd; 
+  border-color: #ffecb5;
+  color: #664d03; 
+}
+
+
+.form-group {
+  margin-bottom: 20px; 
+  text-align: left; 
+}
+
+.form-group label {
+  display: block; /* Etiqueta en su propia línea */
+  margin-bottom: 8px; /* Espacio debajo de la etiqueta */
+  font-weight: bold; /* Texto en negrita */
+  color: #555; /* Color de texto de la etiqueta */
+  font-size: 14px; /* Tamaño de fuente de la etiqueta */
+}
+
+.form-group input[type="text"] {
+  width: 100%; /* Ocupar todo el ancho del contenedor */
+  padding: 12px; /* Más padding interno */
+  border: 1px solid #ccc; /* Borde gris */
+  border-radius: 4px; /* Bordes redondeados */
+  box-sizing: border-box; /* Incluir padding y borde en el tamaño */
+  font-size: 16px; /* Tamaño de fuente del input */
+}
+
+
+button[type="submit"] {
+  width: 100%; /* Ocupar todo el ancho del contenedor */
+  padding: 12px; /* Más padding */
+  background-color: #007bff; /* Color azul primario */
+  color: white; /* Texto blanco */
+  border: none; /* Sin borde */
+  border-radius: 4px; /* Bordes redondeados */
+  cursor: pointer; /* Cursor de mano */
+  font-size: 18px; /* Tamaño de fuente más grande */
+  font-weight: bold; /* Texto en negrita */
+  transition: background-color 0.3s ease; /* Transición suave al pasar el mouse */
+  margin-top: 10px; /* Espacio arriba del botón */
+}
+
+button[type="submit"]:hover {
+  background-color: #0056b3; /* Color azul más oscuro al pasar el mouse */
+}
+
+
+.resend-form {
+  margin-top: 20px; /* Espacio superior (reducido un poco) */
+  display: inline; /* Para que el enlace se vea como parte del texto */
+}
+
+
+.verification-container .resend-form button {
+  background: none; /* Sin fondo */
+  border: none; /* Sin borde */
+  color: #007bff; /* Color azul como un enlace */
+  cursor: pointer; /* Cursor de mano */
+  padding: 0; /* Sin padding */
+  font-size: 14px; /* Tamaño de fuente más pequeño */
+  text-decoration: underline; /* Subrayado */
+  /* Aseguramos que estos estilos no sean sobrescritos por estilos generales de botón */
+  background-color: transparent !important; /* Asegura que el fondo sea transparente en hover */
+  color: #007bff !important; /* Asegura el color del texto en hover */
+}
+
+
+.verification-container .resend-form button:hover {
+  text-decoration: none; /* Quitar subrayado al pasar el mouse (efecto hover) */
+  /* Aseguramos que el fondo se mantenga transparente y el color del texto correcto en hover */
+  background-color: transparent !important;
+  color: #0056b3 !important; /* Opcional: un azul ligeramente más oscuro para el hover del enlace */
+}
+
+

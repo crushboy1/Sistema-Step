@@ -1,0 +1,108 @@
+/* Reset básico de estilos */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body,
+html {
+    width: 100%;
+    height: 100%;
+}
+
+/* Fondo con imagen y estilo general */
+body {
+    background-image: url('/static/img/3.jpeg'); /* Reemplaza con la URL de tu imagen */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    text-align: center;
+    flex-direction: column;
+    padding: 0 10px; /* Asegura que no se sobrepase el borde en pantallas pequeñas */
+}
+
+/* Estilo para el título */
+h2 {
+    color: #fff;
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Sombra para mejor legibilidad */
+}
+
+/* Estilo para el formulario */
+form {
+    background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco semitransparente */
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px; /* Limita el tamaño del formulario */
+    box-sizing: border-box;
+}
+
+/* Estilo de los campos de entrada */
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 14px;
+    margin: 10px 0;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 2px solid #ccc;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+    background-color: rgba(255, 255, 255, 0.8); /* Fondo semitransparente para los campos */
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus {
+    border-color: #4285f4;
+}
+
+/* Estilo de la ReCAPTCHA */
+.g-recaptcha {
+    margin-bottom: 20px;
+}
+
+/* Estilo general de los botones */
+button {
+    padding: 16px 32px;
+    font-size: 18px;
+    font-weight: bold;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-top: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background-color: #34a853;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Botón de "Registrar" */
+button:hover {
+    background-color: #2c8f44;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+button:active {
+    background-color: #2b7d3f;
+    transform: translateY(0);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}

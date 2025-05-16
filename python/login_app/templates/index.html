@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Inicio</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/indexstyles.css') }}">
+
+</head>
+<body>
+    <!-- Contenido de la página -->
+    <div class="container">
+        <h1>Bienvenido al Sitio de Tutoria entre Pares (STEP)</h1>
+        <p>Este sitio te ayudará a encontrar la tutoria que necesitas.</p>
+        
+        <!-- Botón de Login -->
+        <button id="login-btn" onclick="window.location.href='{{ url_for('login') }}'">Login</button>
+
+        <!-- Botón de Registro -->
+        <button id="register-btn" onclick="window.location.href='{{ url_for('register') }}'">Registro</button>
+    </div>
+</body>
+</html>

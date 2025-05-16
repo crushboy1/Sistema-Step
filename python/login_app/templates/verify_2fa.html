@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificación de Doble Factor</title>
+
+            {# Vinculando el archivo de estilos específico para esta página #}
+            {# Asegúrate de que verify_2fa.css exista en tu carpeta static/css #}
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/verify_2fa.css') }}"
+    />
+    
+</head>
+<body>
+
+
+        <div class="verification-container">
+            <h2>Verificación de Doble Factor</h2>
+
+                {% with messages = get_flashed_messages(with_categories=true) %} {# Usar with_categories=true si flasheas con categorías #}
+            {% if messages %}
+                <ul class="flashes">
+                    {% for category, message in messages %} {# Iterar sobre categoría y mensaje #}
+                        <li class="{{ category }}">{{ message }}</li> {# Añadir la categoría como clase #}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}     
+        
+
+                <form action="{{ url_for('verify_2fa') }}" method="POST">
+                    <div class="form-group">
+                        <label for="verification_code">Código de Verificación:</label>
+                        <input type="text" id="verification_code" name="verification_code" required autocomplete="off"> {# Añadido autocomplete="off" #}
+                    </div>
+
+                    <button type="submit">Verificar Código</button>
+                </form>
+
+        
+            <p>¿No recibió el código?
+                <form action="{{ url_for('resend_2fa_code') }}" method="POST" class="resend-form">
+        
+                <button type="submit" class="resend-link">Reenviar</button>
+                </form>
+            </p>
+        </div>
+        
+        
+
+</body>
+</html>

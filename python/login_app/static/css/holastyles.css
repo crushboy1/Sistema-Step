@@ -1,0 +1,106 @@
+/* Estilos globales */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-image: url('/static/img/3.jpeg'); /* Cambia esta URL por la ruta de tu imagen */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: white;
+    margin: 0;
+    padding: 0;
+}
+
+/* Ajuste de color del texto */
+h1, p {
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Estilos de la jumbotron */
+.jumbotron {
+    background: rgba(0, 0, 0, 0.6); /* Fondo semitransparente para mejorar la legibilidad */
+    color: white;
+    padding: 4rem 2rem;
+    margin-bottom: 2rem;
+    border-radius: 15px;
+}
+
+/* Estilo para el título principal */
+h1 {
+    color: #00aaff; /* Celeste brillante */
+    font-size: 3rem; /* Aumentamos el tamaño */
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+/* Estilo para el párrafo de bienvenida */
+p {
+    color: #f0f0f0;
+    font-size: 1.2rem;
+    line-height: 1.8;
+    max-width: 700px;
+    margin: 0 auto 30px auto;
+}
+
+/* Estilos del formulario */
+.form-section {
+    background-color: rgba(0, 0, 0, 0.6); /* Fondo semitransparente */
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    margin-top: 30px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Estilos para los campos de formulario */
+.form-control {
+    background-color: rgba(255, 255, 255, 0.7); /* Fondo semitransparente para los campos */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 20px;
+    font-size: 1rem;
+}
+
+/* Estilo para el botón */
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 100%;
+}
+
+button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+/* Estilos para los enlaces */
+a {
+    text-decoration: none;
+    color: #00aaff;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+a:hover {
+    color: #0056b3;
+}
+
+/* Estilo para el pie de página */
+footer {
+    position: fixed;
+    bottom: 20px;
+    width: 100%;
+    text-align: center;
+    color: #f0f0f0;
+    font-size: 0.9rem;
+}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Ver Estudiante{% endblock %}
+
+{% block content %}
+<h2 class="text-center">Detalles del Estudiante</h2>
+<div class="card">
+    <div class="card-header">
+        Estudiante ID: {{ estudiante.id }}
+    </div>
+    <div class="card-body">
+        <p><strong>Nombre:</strong> {{ estudiante.nombre }}</p>
+        <p><strong>Apellido:</strong> {{ estudiante.apellido }}</p>
+        <p><strong>Edad:</strong> {{ estudiante.edad }}</p>
+
+    </div>
+</div>
+<a href="{{ url_for('estudiantes') }}" class="btn btn-primary mt-3">Volver a la lista</a>
+<a href="{{ url_for('editar_estudiante', id=estudiante.id) }}" class="btn btn-warning mt-3">Editar</a>
+<form method="POST" action="{{ url_for('eliminar_estudiante', id=estudiante.id) }}" style="display: inline;">
+    <button type="submit" class="btn btn-danger mt-3">Eliminar</button>
+</form>
+{% endblock %}

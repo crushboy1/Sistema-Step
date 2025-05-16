@@ -1,0 +1,226 @@
+/* General */
+body {
+    background: linear-gradient(to right, #00c6ff, #0072ff); /* Degradado de azul a turquesa */
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* Contenedor principal */
+.container {
+    max-width: 1100px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transform: scale(1);
+    transition: transform 0.3s ease;
+}
+
+.container:hover {
+    transform: scale(1.02); /* Efecto al pasar el mouse */
+}
+
+/* Título */
+h1 {
+    text-align: center;
+    color: #0072ff;
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+}
+
+/* Mensajes flash */
+.alert {
+    margin: 15px 0;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 16px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.alert-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.alert-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.alert-info {
+    background-color: #17a2b8;
+    color: white;
+}
+
+/* Tabla */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+    font-size: 14px;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #0072ff;
+    color: white;
+    font-weight: bold;
+}
+
+tbody tr:hover {
+    background-color: #f1f1f1; /* Color de fondo al pasar el mouse */
+}
+
+/* Botones de Editar y Eliminar */
+button.btn {
+    display: inline-block;
+    font-size: 14px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Botón de Editar */
+button.btn-warning {
+    background-color: #ffb84d; /* Amarillo cálido */
+    color: #fff;
+    padding: 12px 25px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 50px; /* Bordes redondeados */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+}
+
+button.btn-warning:hover {
+    background-color: #ff9e2f; /* Amarillo más intenso al pasar el mouse */
+    transform: scale(1.05); /* Aumento sutil de tamaño */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada */
+}
+
+button.btn-warning:active {
+    background-color: #ff8c00; /* Color cuando el botón está siendo presionado */
+    transform: scale(1); /* Restaurar tamaño normal */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Sombra más suave */
+}
+
+/* Botón de Eliminar */
+button.btn-danger {
+    background-color: #dc3545; /* Rojo */
+    color: white;
+    padding: 12px 25px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+}
+
+button.btn-danger:hover {
+    background-color: #c82333;
+    transform: scale(1.05); /* Pequeño zoom */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada */
+}
+
+/* Botón de Crear Estudiante */
+.btn-primary {
+    display: block;
+    width: 200px;
+    padding: 10px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+    background-color: #0072ff;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    margin: 20px auto;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px); /* Sutil efecto al pasar el mouse */
+}
+
+/* Estilo de la tarjeta de estudiantes (lista estilo Facebook) */
+.estudiante-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #fff;
+    padding: 12px 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.estudiante-card:hover {
+    transform: scale(1.03); /* Aumenta el tamaño de la tarjeta al pasar el mouse */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Efecto de sombra */
+}
+
+.estudiante-card img {
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+}
+
+.estudiante-card .info {
+    flex-grow: 1;
+    margin-left: 15px;
+}
+
+.estudiante-card .info h5 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+    font-weight: 600;
+}
+
+.estudiante-card .info p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.estudiante-card .btn-view {
+    background-color: #0072ff;
+    color: white;
+    font-size: 14px;
+    padding: 6px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.estudiante-card .btn-view:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px); /* Efecto de elevar el botón */
+}
+
+/* Fondo en las tarjetas */
+.estudiante-card {
+    background: linear-gradient(to right, #f4f7fc, #e1e9f1); /* Fondo suave degradado */
+}
