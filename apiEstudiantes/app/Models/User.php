@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable; // Importa la clase Authenticatable
+use Illuminate\Foundation\Auth\User as Authenticatable; 
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens; // Importa el trait HasApiTokens
-use Illuminate\Database\Eloquent\Relations\BelongsToMany; // Importa BelongsToMany
-use App\Models\Role; // Importa el modelo Role
-use Carbon\Carbon; // Importar Carbon si aún no está para last_login_at
+use Laravel\Sanctum\HasApiTokens; 
+use Illuminate\Database\Eloquent\Relations\BelongsToMany; 
+use App\Models\Role; 
+use App\Models\Curso; 
+use Carbon\Carbon; 
 class User extends Authenticatable
 {
 
@@ -21,12 +22,22 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'last_name',
+        'number',
         'email',
         'password',
         'two_factor_code',
         'two_factor_expires_at',
         'two_factor_enabled',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
         'last_login_at',
+        'last_login_ip',
+        'registered_ip',
+        'failed_login_attempts',
+        'locked_until',
+        'password_changed_at',
+        'last_login_user_agent',
     ];
 
     /**
@@ -39,6 +50,8 @@ class User extends Authenticatable
         'remember_token',
         'two_factor_code',
         'two_factor_expires_at',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
     ];
 
     /**
@@ -51,13 +64,18 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'two_factor_expires_at' => 'datetime',
-        'two_factor_enabled' => 'boolean',
+        'two_factor_enabled_at' => 'datetime', // Castear como datetime
+        'two_factor_recovery_codes' => 'array', // Castear como array (si almacena JSON)
         'last_login_at' => 'datetime',
+        'locked_until' => 'datetime',
+        'password_changed_at' => 'datetime',
+        // Los demás campos (string, integer) no necesitan casteo explícito si ya son su tipo por defecto
+        'failed_login_attempts' => 'integer',
     ];
 
     // Puedes añadir aquí cualquier método personalizado para tu modelo
     // Por ejemplo, un método para generar el código 2FA o verificar si 2FA está activo
-
+    protected $appends = ['roles_names', 'numero_contacto']; // Añade 'numero_contacto' aquí
     /**
      * Check if the user requires two-factor authentication.
      *
@@ -107,5 +125,39 @@ class User extends Authenticatable
         // 'user_id' es la clave foránea en la tabla pivote que apunta a este modelo (User)
         // 'role_id' es la clave foránea en la tabla pivote que apunta al modelo relacionado (Role)
         return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_id');
+    }
+    /**
+     * Verifica si el usuario tiene un rol específico.
+     *
+     * @param string $roleName El nombre del rol a verificar (ej. 'admin', 'editor', 'subscriber').
+     * @return bool
+     */
+    public function hasRole(string $roleName): bool
+    {
+        return $this->roles->contains('name', $roleName);
+    }
+    public function cursos()
+    {
+        return $this->belongsToMany(Curso::class, 'course_user', 'user_id', 'course_id');
+    }
+    public function cursosEnseñados()
+    {
+        return $this->hasMany(Curso::class, 'user_id'); // 'user_id' in 'cursos' table points to the tutor's ID
+    }
+    // NUEVO: Accessor para el número de teléfono si no se llama 'phone_number'
+    // Si tu campo en la DB se llama 'numero', podrías tener un accessor así:
+    // public function getNumeroAttribute($value)
+    // {
+    //     return $this->attributes['phone_number']; // Asumiendo que 'phone_number' es el nombre real de la columna
+    // }
+    // O si quieres que se muestre como 'numero_contacto' en la API:
+    public function getRolesNamesAttribute()
+    {
+        return $this->roles->pluck('name');
+    }
+
+    public function getNumeroContactoAttribute()
+    {
+        return $this->number; // Asumiendo que el campo en la DB es 'phone_number'
     }
 }

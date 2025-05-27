@@ -12,7 +12,7 @@ class PermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        // Insertar los permisos en la tabla 'permissions'
+        
         DB::table('permissions')->insert([
             ['name' => 'view_courses', 'display_name' => 'Ver Cursos', 'description' => 'Permite ver la lista de cursos', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'create_course', 'display_name' => 'Crear Curso', 'description' => 'Permite crear nuevos cursos', 'created_at' => now(), 'updated_at' => now()],
@@ -23,7 +23,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'view_users', 'display_name' => 'Ver usuarios', 'description' => 'Permite ver a los estudiantes registrados en el sistema', 'created_at' => now(), 'update_at' => now()],
             ['name' => 'edit_user', 'display_name' => 'Editar usuario', 'description' => 'Permite editar usuario registrado en el sistema', 'created_at' => now(), 'update_at' => now()],
             ['name' => 'delete_user', 'display_name' => 'Eliminar usuario', 'description' => 'Permite eliminar usuario registrado en el sistema', 'created_at' => now(), 'update_at' => now()],
-            // Puedes añadir más permisos si es necesario (ej. view_students, edit_students, etc.)
+           
         ]);
     }
 }

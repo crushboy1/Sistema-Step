@@ -1,0 +1,137 @@
+# Especifica la versión de Docker Compose
+version: '3.8'
+
+# Define los servicios que componen tu aplicación
+services:
+
+  # Servicio para el backend Laravel (PHP-FPM)
+  app:
+    # Construye la imagen Docker usando el Dockerfile en la carpeta apiEstudiantes
+    build:
+      context: ./apiEstudiantes # El contexto de construcción es la carpeta apiEstudiantes
+      dockerfile: Dockerfile # El Dockerfile está directamente dentro de apiEstudiantes
+    # Monta los directorios locales en el contenedor para sincronizar el código durante el desarrollo
+    volumes:
+      - ./apiEstudiantes:/var/www/html # Monta la carpeta apiEstudiantes local en /var/www/html dentro del contenedor
+    # Depende de los servicios de base de datos y mailpit
+    depends_on:
+      - db
+      - mailpit
+    # Define las variables de entorno para la aplicación Laravel
+    # Estas variables sobrescribirán las del archivo .env dentro del contenedor
+    environment:
+      # Configuración de la base de datos
+      DB_CONNECTION: mysql
+      DB_HOST: db # El host es el nombre del servicio de base de datos en docker-compose
+      DB_PORT: 3306
+      DB_DATABASE: ${DB_DATABASE:-laravel_db} # Usa la variable de entorno local o un valor por defecto
+      DB_USERNAME: ${DB_USERNAME:-sail} # Usa la variable de entorno local o un valor por defecto
+      DB_PASSWORD: ${DB_PASSWORD:-password} # Usa la variable de entorno local o un valor por defecto
+      # Configuración de Mailpit para desarrollo
+      MAIL_MAILER: smtp
+      MAIL_HOST: mailpit # El host es el nombre del servicio de mailpit dentro de la red Docker
+      MAIL_PORT: 1025 # Puerto SMTP por defecto de Mailpit
+      MAIL_USERNAME: null # Mailpit no requiere usuario/contraseña por defecto
+      MAIL_PASSWORD: null
+      MAIL_ENCRYPTION: null # Mailpit no requiere encriptación para conexiones locales
+      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-hello@example.com}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME:-${APP_NAME:-Laravel}}
+      # Otras variables de entorno de Laravel (APP_KEY, etc.)
+      APP_KEY: ${APP_KEY:-base64:randomstringgeneratedbyartisan} # Usa la variable de entorno local o un valor por defecto (¡genera una real!)
+      APP_DEBUG: ${APP_DEBUG:-true}
+      APP_ENV: ${APP_ENV:-local}
+      APP_URL: http://localhost # URL de la aplicación
+    # Nombre del contenedor (opcional)
+    container_name: laravel_app
+
+  # Servicio para el frontend Flask (Gunicorn)
+  flask_app:
+    # Construye la imagen Docker usando el Dockerfile en la carpeta python
+    build:
+      context: ./python # El contexto de construcción es la carpeta python
+      dockerfile: Dockerfile # El Dockerfile está directamente dentro de python
+    # Monta los directorios locales en el contenedor para sincronizar el código durante el desarrollo
+    volumes:
+      - ./python:/app # Monta la carpeta python local en /app dentro del contenedor
+    # Depende de los servicios de base de datos y aplicación Laravel
+    depends_on:
+      - db
+      - app
+    # Define variables de entorno para la aplicación Flask
+    environment:
+      FLASK_ENV: development # Configura el entorno de Flask
+      FLASK_DEBUG: 1 # Habilita el modo depuración en Flask
+      # Flask se comunicará con la API de Laravel a través de Nginx
+      LARAVEL_API_URL: http://web/api
+      LARAVEL_API_BASE_URL: http://web/api/v1
+    # Nombre del contenedor (opcional)
+    container_name: flask_frontend
+
+  # Servicio para el servidor web Nginx (proxy inverso)
+  web:
+    image: nginx:alpine # Usa la imagen oficial de Nginx (versión alpine es más pequeña)
+    # Monta el archivo de configuración de Nginx local en el contenedor
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro # Monta el archivo de configuración
+      - ./apiEstudiantes:/var/www/html # Monta el código de Laravel para servir archivos estáticos de public
+      - ./python:/app # Monta el código de Flask para servir archivos estáticos de static
+    # Mapea el puerto 80 del contenedor al puerto 80 del host
+    ports:
+      - "80:80"
+      # Eliminado el puerto 8080:8080 ya que no se usa en la configuración de Nginx
+    # Depende de los servicios de aplicación (Laravel FPM y Flask Gunicorn)
+    depends_on:
+      - app
+      - flask_app
+    # Nombre del contenedor (opcional)
+    container_name: nginx_proxy
+
+  # Servicio para la base de datos MySQL
+  db:
+    image: mysql:8.0 # Usa una imagen oficial de MySQL
+    # Reinicia el contenedor si falla (a menos que se detenga manualmente)
+    restart: always
+    # Define las variables de entorno para configurar MySQL
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-laravel_db} # Nombre de la base de datos (de .env local o por defecto)
+      MYSQL_USER: ${DB_USERNAME:-sail} # Usuario de la base de datos (de .env local o por defecto)
+      MYSQL_PASSWORD: ${DB_PASSWORD:-password} # Contraseña del usuario (de .env local o por defecto)
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-secret} # Contraseña del usuario root (de .env local o por defecto)
+    # Monta un volumen nombrado para persistir los datos de la base de datos
+    volumes:
+      - db_data:/var/lib/mysql # Monta el volumen 'db_data' en el directorio de datos de MySQL
+    # Mapea el puerto 3306 del contenedor al puerto 3306 del host (opcional, para acceso externo)
+    ports:
+      - "3306:3306"
+    # Nombre del contenedor (opcional)
+    container_name: mysql_db
+
+  # Servicio para phpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin # Usa la imagen oficial de phpMyAdmin
+    restart: always
+    ports:
+      - "8081:80" # Mapea el puerto 80 del contenedor al puerto 8081 del host
+    environment:
+      # Configura el host de la base de datos al nombre del servicio 'db'
+      PMA_HOST: db
+      PMA_PORT: 3306 # Puerto de MySQL
+      PMA_USER: root # Usuario para phpMyAdmin (usualmente root en desarrollo)
+      PMA_PASSWORD: ${DB_ROOT_PASSWORD:-secret} # Contraseña del usuario root (de .env local o por defecto)
+    depends_on:
+      - db # phpMyAdmin depende del servicio de base de datos
+    container_name: phpmyadmin_interface
+
+  # Servicio para Mailpit (servidor SMTP de desarrollo)
+  mailpit:
+    image: axllent/mailpit # Usa la imagen oficial de Mailpit
+    # Mapea los puertos SMTP (1025) y HTTP (8025) del contenedor a los puertos del host
+    ports:
+      - "1025:1025" # Puerto SMTP para que las aplicaciones envíen correos
+      - "8025:8025" # Puerto HTTP para acceder a la interfaz web de Mailpit
+    # Nombre del contenedor (opcional)
+    container_name: mailpit_server
+
+# Define los volúmenes nombrados utilizados por los servicios
+volumes:
+  db_data: # Volumen para persistir los datos de la base de datos

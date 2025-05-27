@@ -1,0 +1,39 @@
+<div class="modal fade" id="agregarDetalleModal" tabindex="-1" aria-labelledby="agregarDetalleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form id="agregarDetalleForm" action="" method="POST"> 
+        <div class="modal-header">
+          <h5 class="modal-title" id="agregarDetalleModalLabel">Agregar/Editar Detalles Adicionales para: <span id="detalle_nombre_curso"></span></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="detalle_dias_tutoria" class="form-label">Días y Horarios de Tutoría</label>
+            <input type="text" class="form-control" name="dias_tutoria" id="detalle_dias_tutoria" placeholder="Ej: Lunes y Miércoles 18:00-20:00">
+            
+            <div class="invalid-feedback" id="detalle_dias_tutoria-error"></div>
+          </div>
+          <div class="mb-3">
+            <label for="detalle_forma_pago" class="form-label">Forma de Pago</label>
+            <input type="text" class="form-control" name="forma_pago" id="detalle_forma_pago" placeholder="Ej: Transferencia Bancaria, Yape, PayPal">
+            
+            <div class="invalid-feedback" id="detalle_forma_pago-error"></div>
+          </div>
+          <div class="mb-3">
+            <label for="detalle_otros" class="form-label">Otros Detalles / Notas</label>
+            <textarea class="form-control" name="otros" id="detalle_otros" rows="3" placeholder="Cualquier información adicional relevante."></textarea>
+            <div class="invalid-feedback" id="detalle_otros-error"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times me-1"></i>Cancelar
+          </button>
+          <button type="submit" class="btn btn-success">
+            <i class="fas fa-save me-1"></i>Guardar Detalles
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

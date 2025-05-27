@@ -1,0 +1,55 @@
+<div class="modal fade" id="nuevoCursoModal" tabindex="-1" aria-labelledby="nuevoCursoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      {# Se eliminó enctype="multipart/form-data" #}
+      <form id="nuevoCursoForm" method="POST" action="{{ url_for('nuevo_curso') }}">
+        <div class="modal-header">
+          <h5 class="modal-title" id="nuevoCursoModalLabel">Publicar Nuevo Curso</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="nombreNuevo" class="form-label">Nombre del Curso <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" name="nombre" id="nombreNuevo" required>
+            <div class="invalid-feedback" id="nombreNuevo-error"></div>
+          </div>
+          <div class="mb-3">
+            <label for="descripcionNuevo" class="form-label">Descripción</label>
+            <textarea class="form-control" name="descripcion" id="descripcionNuevo" rows="3"></textarea> {# Se quitó required #}
+            <div class="invalid-feedback" id="descripcionNuevo-error"></div>
+          </div>
+          <div class="mb-3">
+            <label for="montoNuevo" class="form-label">Monto (S/.) <span class="text-danger">*</span></label>
+            <input type="number" step="0.01" class="form-control" name="monto" id="montoNuevo" required min="0">
+            <div class="invalid-feedback" id="montoNuevo-error"></div>
+          </div>
+          <div class="mb-3">
+            <label for="frecuenciaNuevo" class="form-label">Frecuencia <span class="text-danger">*</span></label>
+            <select name="frecuencia" class="form-select" id="frecuenciaNuevo" required>
+              <option value="">Seleccionar frecuencia</option>
+              <option value="Diario">Diario</option>
+              <option value="Semanal">Semanal</option>
+              <option value="Personalizado">Personalizado</option>
+            </select>
+          <div class="invalid-feedback" id="frecuenciaNuevo-error"></div>
+          </div>
+          <div class="mb-3">
+            <label for="imagen_urlNuevo" class="form-label">URL de la Imagen</label>
+            <input type="url" class="form-control" name="imagen_url" id="imagen_urlNuevo" placeholder="https://ejemplo.com/imagen.jpg">
+            <div class="form-text">Proporciona una URL válida para la imagen del curso.</div>
+            <div class="invalid-feedback" id="imagen_urlNuevo-error"></div>
+          </div>
+          {# Se eliminó el input de tipo file #}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times me-1"></i>Cancelar
+          </button>
+          <button type="submit" class="btn btn-success">
+            <i class="fas fa-plus me-1"></i>Publicar Curso
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

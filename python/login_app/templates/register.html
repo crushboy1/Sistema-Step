@@ -68,12 +68,34 @@
 
       <form action="{{ url_for('register') }}" method="POST">
         <div class="form-group">
-          <label for="nombre">Nombre completo</label>
+          <label for="name">Nombres</label> {# Cambiado de 'nombre' a 'name' para consistencia con Laravel #}
           <input
             type="text"
-            id="nombre"
-            name="nombre"
-            placeholder="Ej. Juan Pérez"
+            id="name"
+            name="name"
+            placeholder="Ej. Juan David"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="last_name">Apellidos</label> {# Nuevo campo #}
+          <input
+            type="text"
+            id="last_name"
+            name="last_name"
+            placeholder="Ej. Pérez García"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="number">Teléfono</label> {# Nuevo campo #}
+          <input
+            type="text"
+            id="number"
+            name="number"
+            placeholder="Ej. 987654321"
             required
           />
         </div>
@@ -87,6 +109,15 @@
             placeholder="ejemplo@correo.com"
             required
           />
+        </div>
+
+        <div class="form-group">
+          <label for="role">Rol</label> {# Nuevo campo desplegable #}
+          <select id="role" name="role" required>
+            <option value="">Selecciona un rol</option>
+            <option value="tutor">Tutor</option>
+            <option value="estudiante">Estudiante</option>
+          </select>
         </div>
 
         <div class="form-group">

@@ -32,6 +32,7 @@
         <p>Este código es válido por un tiempo limitado. Por favor, úsalo para completar tu inicio de sesión.</p>
         <p>Si no solicitaste este código, por favor ignora este correo.</p>
         <p>Gracias.</p>
+        {{ config('app.name') }}
     </div>
 </body>
 </html>

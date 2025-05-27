@@ -4,14 +4,31 @@
 
 {% block content %}
 <div class="container">
-    <h2 class="text-center my-4">Lista de Cursos</h2>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <h2 class="text-center my-4">Lista de Tutorias</h2>
 
-    <!-- Buscador -->
+    
+    {% if 'user' in session and session['user'] %}
+        <div class="alert alert-info user-info-display mb-4 d-flex align-items-center">
+            <i class="fas fa-user me-2"></i>
+            <div>
+                <strong>{{ session['user'].name }}</strong>
+                {% if session['user'].roles %}
+                    - Rol: 
+                    {% for role in session['user'].roles %}
+                        {{ role.name }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                {% endif %}
+                {% if session['user'].last_login_at %}
+                    <br><small class="text-muted">Última conexión: {{ session['user'].last_login_at | default('N/A') }}</small>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+
     <div class="row mb-4">
         <div class="col-md-8 mx-auto">
-            <form method="GET" action="{{ url_for('cursos') }}" class="d-flex">
-                <input type="text" name="q" class="form-control me-2" placeholder="Buscar por nombre o descripción" value="{{ request.args.get('q', '') }}">
+            <form method="GET" action="{{ url_for('cursos') }}" class="input-group">
+                <input type="text" name="q" class="form-control" placeholder="Buscar por nombre o descripción" value="{{ request.args.get('q', '') }}">
                 <button type="submit" class="btn btn-primary">
                     <i class="fa fa-search"></i> Buscar
                 </button>
@@ -19,48 +36,614 @@
         </div>
     </div>
 
-    <!-- Botón para agregar curso -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <a href="{{ url_for('nuevo_curso') }}" class="btn btn-success">
-            <i class="fa fa-plus"></i> Agregar Nuevo Curso
-        </a>
+        {% if current_user and (has_role(current_user, 'tutor') or has_role(current_user, 'admin')) %}
+            <button type="button" class="btn btn-publicar" data-bs-toggle="modal" data-bs-target="#nuevoCursoModal">
+                <i class="fa fa-plus"></i> Publicar Nuevo Curso
+            </button>
+        {% endif %}
     </div>
 
-    <!-- Contenedor de tarjetas -->
     <div class="row">
-        {% if cursos %}
-            {% for curso in cursos %}
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ curso.nombre }}</h5>
-                        <p class="card-text">
-                            <strong>Descripción:</strong> {{ curso.descripcion }}<br>
-                            <strong>Créditos:</strong> {{ curso.creditos }}
-                        </p>
-                        <div class="d-flex justify-content-around">
-                            <!-- Icono de Ver -->
-                            <a href="{{ url_for('ver_curso', id=curso.id) }}" class="btn btn-outline-primary btn-sm">
-                                <i class="fa fa-eye"></i> Ver
-                            </a>
-                            <!-- Icono de Editar -->
-                            <a href="{{ url_for('editar_curso', id=curso.id) }}" class="btn btn-outline-warning btn-sm">
-                                <i class="fa fa-pencil-alt"></i> Editar
-                            </a>
-                            <!-- Icono de Eliminar -->
-                            <form method="POST" action="{{ url_for('eliminar_curso', id=curso.id) }}" style="display: inline;">
-                                <button type="submit" class="btn btn-outline-danger btn-sm">
-                                    <i class="fa fa-trash"></i> Eliminar
+    {% if cursos %}
+        {% for curso in cursos %}
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100 curso-card">
+                {% if curso.imagen_url %}
+                    <img src="{{ curso.imagen_url }}" class="card-img-top curso-img" alt="Imagen del curso">
+                {% endif %}
+                
+                <div class="card-header card-title">
+                    {{ curso.nombre }}
+                </div>
+
+                <div class="card-body">
+                    <p class="card-text">
+                        <strong>Descripción:</strong> {{ curso.descripcion }}<br>
+                        <strong>Monto:</strong> S/.{{ curso.monto }}<br>
+                        <strong>Frecuencia:</strong> {{ curso.frecuencia | default('N/A') }}<br>
+                        <strong>Tutor:</strong>
+                        {% if curso.tutor %}
+                            {{ curso.tutor.name }} {{ curso.tutor.last_name }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </p>
+                    <div class="d-flex justify-content-around mt-3">
+                        {# Botón "Ver" ahora abre el nuevo modal de detalles #}
+                        <button type="button"
+                                class="btn btn-outline-primary btn-sm btn-ver-modal"
+                                data-bs-toggle="modal"
+                                data-bs-target="#verCursoModal"
+                                data-curso='{{ curso | tojson }}'> {# Pasamos todo el objeto curso #}
+                            <i class="fa fa-eye"></i> Ver
+                        </button>
+
+                        {% if current_user and (has_role(current_user, 'tutor') or has_role(current_user, 'admin')) and current_user.id == curso.user_id %}
+                            <button type="button"
+                                    class="btn btn-outline-warning btn-sm btn-editar-modal"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editarCursoModal"
+                                    data-curso='{{ curso | tojson }}'>
+                            <i class="fa fa-pencil-alt"></i> Editar
+                            </button>
+
+                            {# NUEVO BOTÓN: Agregar/Editar Detalle #}
+                            <button type="button"
+                                    class="btn btn-outline-info btn-sm btn-agregar-detalle-modal"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#agregarDetalleModal"
+                                    data-curso='{{ curso | tojson }}'>
+                                <i class="fas fa-info-circle"></i> Detalle
+                            </button>
+
+                            <button type="button" 
+                                    class="btn btn-outline-danger btn-sm btn-eliminar-modal"
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#confirmacionEliminarModal"
+                                    data-curso-id="{{ curso.id }}"
+                                    data-curso-nombre="{{ curso.nombre }}">
+                                <i class="fa fa-trash"></i> Eliminar
+                            </button>
+                        {% elif current_user and has_role(current_user, 'estudiante') %}
+                            <form method="POST" action="{{ url_for('registrarse_curso', curso_id=curso.id) }}" style="display: inline;">
+                                <button type="submit" class="btn btn-registrar btn-sm">
+                                    <i class="fa fa-user-plus"></i> Registrarse
                                 </button>
                             </form>
-                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
-            {% endfor %}
-        {% else %}
-            <p class="text-center">No se encontraron cursos con ese criterio de búsqueda.</p>
-        {% endif %}
-    </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-center col-12">No se encontraron cursos disponibles.</p>
+    {% endif %}
 </div>
+
+
+    {# Incluir los modales, que ahora NO contienen scripts #}
+    {% include 'modales/nuevo_curso_modal.html' %}
+    {% include 'modales/editar_curso_modal.html' %}
+    {% include 'modales/ver_curso_modal.html' %}
+    {% include 'modales/agregar_detalle_modal.html' %}
+    {% include 'modales/confirmacion_eliminar_modal.html' %}
+</div> {# Cierre del div.container que contiene todo el contenido del bloque #}
+
+{# Enlazar el archivo CSS específico para esta página #}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/cursos.css') }}" />
+
+{# === TODO EL JAVASCRIPT VA AQUÍ, DESPUÉS DE QUE EL HTML DE LOS MODALES SE HAYA CARGADO === #}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // --- Funciones Auxiliares Comunes ---
+    function isValidUrl(string) {
+        try {
+            new URL(string);
+            return true;
+        } catch (_) {
+            return false;
+        }
+    }
+
+    function showAlert(message, type) {
+        document.querySelectorAll('.custom-alert').forEach(alert => alert.remove());
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show custom-alert`;
+        alertDiv.style.position = 'fixed';
+        alertDiv.style.top = '20px';
+        alertDiv.style.right = '20px';
+        alertDiv.style.zIndex = '9999';
+        alertDiv.style.minWidth = '300px';
+        alertDiv.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.body.appendChild(alertDiv);
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+
+    // --- Lógica para el modal de NUEVO CURSO ---
+    const nuevoCursoModal = document.getElementById('nuevoCursoModal');
+    const nuevoCursoForm = document.getElementById('nuevoCursoForm');
+
+    // Función para limpiar mensajes de error específicos del modal de nuevo curso
+    function clearNuevoCursoErrors() {
+        document.querySelectorAll('#nuevoCursoModal .is-invalid').forEach(el => el.classList.remove('is-invalid'));
+        document.querySelectorAll('#nuevoCursoModal .invalid-feedback').forEach(el => el.textContent = '');
+    }
+
+    // Limpiar formulario y errores cuando se abra el modal de nuevo curso
+    if (nuevoCursoModal) {
+        nuevoCursoModal.addEventListener('show.bs.modal', function() {
+            clearNuevoCursoErrors();
+            nuevoCursoForm.reset(); 
+        });
+    }
+
+    // Manejar el envío del formulario de nuevo curso con AJAX
+    if (nuevoCursoForm) {
+        nuevoCursoForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            clearNuevoCursoErrors();
+
+            let isValid = true;
+
+            const nombreField = document.getElementById('nombreNuevo');
+            if (!nombreField.value.trim()) {
+                nombreField.classList.add('is-invalid');
+                document.getElementById('nombreNuevo-error').textContent = 'El nombre del curso es obligatorio.';
+                isValid = false;
+            }
+
+            const montoField = document.getElementById('montoNuevo');
+            if (!montoField.value || parseFloat(montoField.value) < 0) {
+                montoField.classList.add('is-invalid');
+                document.getElementById('montoNuevo-error').textContent = 'El monto es obligatorio y debe ser un número positivo.';
+                isValid = false;
+            }
+
+            const frecuenciaFieldNuevo = document.getElementById('frecuenciaNuevo');
+            if (!frecuenciaFieldNuevo.value.trim()) {
+                frecuenciaFieldNuevo.classList.add('is-invalid');
+                document.getElementById('frecuenciaNuevo-error').textContent = 'La frecuencia es obligatoria.';
+                isValid = false;
+            }
+
+            const imagenUrlFieldNuevo = document.getElementById('imagen_urlNuevo');
+            if (imagenUrlFieldNuevo.value && !isValidUrl(imagenUrlFieldNuevo.value)) {
+                imagenUrlFieldNuevo.classList.add('is-invalid');
+                document.getElementById('imagen_urlNuevo-error').textContent = 'La URL de la imagen no es válida.';
+                isValid = false;
+            }
+
+            if (!isValid) {
+                return;
+            }
+
+            const submitBtn = nuevoCursoForm.querySelector('button[type="submit"]');
+            const originalBtnHtml = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Publicando...';
+
+            const formData = new FormData(nuevoCursoForm);
+            const payload = {};
+            formData.forEach((value, key) => {
+                if (key === 'monto') {
+                    payload[key] = parseFloat(value);
+                } else if (value === '' && (key === 'descripcion' || key === 'frecuencia' || key === 'imagen_url')) {
+                    payload[key] = null;
+                } else {
+                    payload[key] = value;
+                }
+            });
+            
+            try {
+                const response = await fetch(nuevoCursoForm.action, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const contentType = response.headers.get('content-type');
+                let result;
+                if (contentType && contentType.includes('application/json')) {
+                    result = await response.json();
+                } else {
+                    const text = await response.text();
+                    result = { success: false, message: text || `Error del servidor (${response.status})` };
+                }
+
+                if (response.ok) {
+                    const modal = bootstrap.Modal.getInstance(nuevoCursoModal);
+                    modal.hide();
+                    showAlert('Curso publicado con éxito.', 'success');
+                    setTimeout(() => {
+                        location.reload(); 
+                    }, 1500); 
+                } else {
+                    if (result.errors) {
+                        Object.keys(result.errors).forEach(field => {
+                            const fieldElement = document.getElementById(`${field}Nuevo`);
+                            const errorElement = document.getElementById(`${field}Nuevo-error`);
+                            if (fieldElement && errorElement) {
+                                fieldElement.classList.add('is-invalid');
+                                errorElement.textContent = result.errors[field][0];
+                            }
+                        });
+                    }
+                    showAlert(result.message || 'No se pudo crear el curso.', 'danger');
+                }
+            } catch (error) {
+                console.error('Error de red o del servidor:', error);
+                showAlert(`Error: ${error.message || 'Error de red o del servidor'}`, 'danger');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnHtml;
+            }
+        });
+    }
+
+    // --- Lógica para el modal de EDITAR CURSO ---
+    const editarCursoModal = document.getElementById('editarCursoModal');
+    const editarCursoForm = document.getElementById('editarCursoForm');
+
+    // Función para limpiar mensajes de error específicos del modal de edición
+    function clearEditarCursoErrors() {
+        document.querySelectorAll('#editarCursoModal .is-invalid').forEach(el => el.classList.remove('is-invalid'));
+        document.querySelectorAll('#editarCursoModal .invalid-feedback').forEach(el => el.textContent = '');
+    }
+
+    if (editarCursoModal) {
+        editarCursoModal.addEventListener('show.bs.modal', function (event) {
+            clearEditarCursoErrors(); // Limpiar errores al abrir el modal
+
+            const button = event.relatedTarget;
+            const cursoDataJson = button.getAttribute('data-curso'); 
+            const curso = JSON.parse(cursoDataJson); 
+
+            document.getElementById('edit_nombre').value = curso.nombre || '';
+            document.getElementById('edit_descripcion').value = curso.descripcion || '';
+            document.getElementById('edit_monto').value = curso.monto || 0;
+            document.getElementById('edit_frecuencia').value = curso.frecuencia || '';
+            document.getElementById('edit_imagen_url').value = curso.imagen_url || '';
+
+            editarCursoForm.setAttribute('action', `/cursos/${curso.id}/editar`);
+        });
+    }
+
+    // Manejar el envío del formulario del modal de edición con AJAX
+    if (editarCursoForm) {
+        editarCursoForm.addEventListener('submit', function(e) {
+            e.preventDefault(); 
+            clearEditarCursoErrors(); 
+
+            let isValid = true;
+
+            const nombreField = document.getElementById('edit_nombre');
+            if (!nombreField.value.trim()) {
+                nombreField.classList.add('is-invalid');
+                document.getElementById('edit_nombre-error').textContent = 'El nombre del curso es obligatorio.';
+                isValid = false;
+            }
+
+            const montoField = document.getElementById('edit_monto');
+            if (!montoField.value || parseFloat(montoField.value) < 0) {
+                montoField.classList.add('is-invalid');
+                document.getElementById('edit_monto-error').textContent = 'El monto es obligatorio y debe ser un número positivo.';
+                isValid = false;
+            }
+
+            const frecuenciaFieldEdit = document.getElementById('edit_frecuencia');
+            if (!frecuenciaFieldEdit.value.trim()) { 
+                frecuenciaFieldEdit.classList.add('is-invalid');
+                document.getElementById('edit_frecuencia-error').textContent = 'La frecuencia es obligatoria.';
+                isValid = false;
+            }
+
+            const imagenUrlFieldEdit = document.getElementById('edit_imagen_url');
+            if (imagenUrlFieldEdit.value && !isValidUrl(imagenUrlFieldEdit.value)) {
+                imagenUrlFieldEdit.classList.add('is-invalid');
+                document.getElementById('imagen_urlNuevo-error').textContent = 'La URL de la imagen no es válida.'; // Ojo: este ID es incorrecto, debería ser edit_imagen_url-error
+                isValid = false;
+            }
+
+            if (!isValid) {
+                return; 
+            }
+
+            const submitBtn = editarCursoForm.querySelector('button[type="submit"]');
+            const originalBtnHtml = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Guardando...';
+
+            const formData = new FormData(editarCursoForm); 
+            const payload = {};
+            formData.forEach((value, key) => {
+                if (key === 'monto') {
+                    payload[key] = parseFloat(value); 
+                } else {
+                    payload[key] = value;
+                }
+            });
+            
+            if (payload['imagen_url'] === '') {
+                payload['imagen_url'] = null;
+            }
+            if (payload['descripcion'] === '') {
+                payload['descripcion'] = null;
+            }
+            if (payload['frecuencia'] === '') {
+                payload['frecuencia'] = null;
+            }
+
+            fetch(editarCursoForm.action, {
+                method: 'POST', 
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest' 
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                const contentType = response.headers.get('content-type');
+                if (response.ok && contentType && contentType.includes('application/json')) {
+                    return response.json();
+                } else if (response.ok) {
+                    return { success: true, message: 'Curso actualizado correctamente.' };
+                } else {
+                    return response.text().then(text => {
+                        throw new Error(text || `Error del servidor (${response.status})`);
+                    });
+                }
+            })
+            .then(data => {
+                if (data.success) {
+                    const modal = bootstrap.Modal.getInstance(editarCursoModal);
+                    modal.hide();
+                    showAlert('Curso actualizado correctamente.', 'success');
+                    setTimeout(() => {
+                        window.location.reload(); 
+                    }, 1500); 
+                } else {
+                    if (data.errors) {
+                        Object.keys(data.errors).forEach(field => {
+                            const fieldElement = document.getElementById(`edit_${field}`);
+                            const errorElement = document.getElementById(`edit_${field}-error`);
+                            if (fieldElement && errorElement) {
+                                fieldElement.classList.add('is-invalid');
+                                errorElement.textContent = data.errors[field][0]; 
+                            }
+                        });
+                    }
+                    showAlert(data.message || 'Error al actualizar el curso.', 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error al enviar el formulario:', error);
+                showAlert(`Error: ${error.message || 'Error de conexión o de red.'}`, 'danger');
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnHtml;
+            });
+        });
+    }
+    // --- Lógica para el modal de VER DETALLES DEL CURSO ---
+    const verCursoModal = document.getElementById('verCursoModal');
+    if (verCursoModal) {
+        verCursoModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget; // Botón que disparó el modal
+            const cursoDataJson = button.getAttribute('data-curso');
+            const curso = JSON.parse(cursoDataJson);
+
+            // Llenar los campos del modal de VER
+            document.getElementById('ver_nombre_curso').textContent = curso.nombre || 'N/A';
+            document.getElementById('ver_descripcion').textContent = curso.descripcion || 'No especificado';
+            document.getElementById('ver_monto').textContent = `S/.${curso.monto || '0.00'}`;
+            document.getElementById('ver_frecuencia').textContent = curso.frecuencia || 'No especificado';
+            document.getElementById('ver_tutor_nombre').textContent = `${curso.tutor ? curso.tutor.name + ' ' + curso.tutor.last_name : 'N/A'}`;
+            
+            // Nuevos campos
+            document.getElementById('ver_dias_tutoria').textContent = curso.dias_tutoria || 'No especificado';
+            document.getElementById('ver_forma_pago').textContent = curso.forma_pago || 'No especificado';
+            document.getElementById('ver_otros').textContent = curso.otros || 'No especificado';
+            
+            // Número de contacto del tutor (del campo 'number' del usuario)
+            document.getElementById('ver_numero_tutor').textContent = curso.tutor && curso.tutor.number ? curso.tutor.number : 'No especificado';
+
+            const verImagen = document.getElementById('ver_imagen_url');
+            if (curso.imagen_url && isValidUrl(curso.imagen_url)) {
+                verImagen.src = curso.imagen_url;
+                verImagen.style.display = 'block'; // Mostrar la imagen
+            } else {
+                verImagen.src = ''; // Limpiar la URL
+                verImagen.style.display = 'none'; // Ocultar la imagen si no hay URL válida
+            }
+        });
+    }
+    // --- Lógica para el modal de AGREGAR/EDITAR DETALLES ADICIONALES ---
+    const agregarDetalleModal = document.getElementById('agregarDetalleModal');
+    const agregarDetalleForm = document.getElementById('agregarDetalleForm');
+
+    // Función para limpiar mensajes de error específicos del modal de detalles adicionales
+    function clearAgregarDetalleErrors() {
+        document.querySelectorAll('#agregarDetalleModal .is-invalid').forEach(el => el.classList.remove('is-invalid'));
+        document.querySelectorAll('#agregarDetalleModal .invalid-feedback').forEach(el => el.textContent = '');
+    }
+
+    if (agregarDetalleModal) {
+        agregarDetalleModal.addEventListener('show.bs.modal', function (event) {
+            clearAgregarDetalleErrors(); // Limpiar errores al abrir el modal
+
+            const button = event.relatedTarget; // Botón que disparó el modal
+            const cursoDataJson = button.getAttribute('data-curso');
+            const curso = JSON.parse(cursoDataJson);
+
+            // Guardar el ID del curso en el formulario para usarlo en la acción
+            agregarDetalleForm.setAttribute('action', `/cursos/${curso.id}/editar_detalles`); 
+
+            // Llenar los campos del formulario de detalles adicionales
+            document.getElementById('detalle_nombre_curso').textContent = curso.nombre || 'N/A'; // Mostrar nombre del curso
+            document.getElementById('detalle_dias_tutoria').value = curso.dias_tutoria || '';
+            document.getElementById('detalle_forma_pago').value = curso.forma_pago || '';
+            document.getElementById('detalle_otros').value = curso.otros || '';
+        });
+    }
+
+    // Manejar el envío del formulario de detalles adicionales con AJAX
+    if (agregarDetalleForm) {
+        agregarDetalleForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            clearAgregarDetalleErrors();
+
+            let isValid = true;
+            // No hay validación 'required' para estos campos, pero puedes añadirla si es necesario
+            // Por ejemplo, si 'dias_tutoria' fuera obligatorio:
+            // const diasTutoriaField = document.getElementById('detalle_dias_tutoria');
+            // if (!diasTutoriaField.value.trim()) {
+            //     diasTutoriaField.classList.add('is-invalid');
+            //     document.getElementById('detalle_dias_tutoria-error').textContent = 'Los días de tutoría son obligatorios.';
+            //     isValid = false;
+            // }
+
+            if (!isValid) {
+                return;
+            }
+
+            const submitBtn = agregarDetalleForm.querySelector('button[type="submit"]');
+            const originalBtnHtml = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Guardando...';
+
+            const formData = new FormData(agregarDetalleForm);
+            const payload = {};
+            formData.forEach((value, key) => {
+                // Si el campo está vacío, enviarlo como null
+                payload[key] = value === '' ? null : value;
+            });
+            
+            try {
+                const response = await fetch(agregarDetalleForm.action, {
+                    method: 'POST', // O PUT, si tu ruta de Flask lo espera
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const contentType = response.headers.get('content-type');
+                let result;
+                if (contentType && contentType.includes('application/json')) {
+                    result = await response.json();
+                } else {
+                    const text = await response.text();
+                    result = { success: false, message: text || `Error del servidor (${response.status})` };
+                }
+
+                if (response.ok) {
+                    const modal = bootstrap.Modal.getInstance(agregarDetalleModal);
+                    modal.hide();
+                    showAlert('Detalles adicionales guardados correctamente.', 'success');
+                    setTimeout(() => {
+                        window.location.reload(); // Recargar para mostrar los cambios
+                    }, 1500);
+                } else {
+                    if (result.errors) {
+                        Object.keys(result.errors).forEach(field => {
+                            const fieldElement = document.getElementById(`detalle_${field}`);
+                            const errorElement = document.getElementById(`detalle_${field}-error`);
+                            if (fieldElement && errorElement) {
+                                fieldElement.classList.add('is-invalid');
+                                errorElement.textContent = result.errors[field][0];
+                            }
+                        });
+                    }
+                    showAlert(result.message || 'No se pudieron guardar los detalles adicionales.', 'danger');
+                }
+            } catch (error) {
+                console.error('Error de red o del servidor al guardar detalles:', error);
+                showAlert(`Error: ${error.message || 'Error de red o del servidor'}`, 'danger');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnHtml;
+            }
+        });
+    }
+    // --- Lógica para el modal de CONFIRMACIÓN DE ELIMINACIÓN ---
+    const confirmacionEliminarModal = document.getElementById('confirmacionEliminarModal');
+    const confirmarEliminarBtn = document.getElementById('confirmarEliminarBtn');
+    let cursoIdToDelete = null; // Variable para almacenar el ID del curso a eliminar
+
+    if (confirmacionEliminarModal) {
+        confirmacionEliminarModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget; // Botón "Eliminar" que disparó el modal
+            cursoIdToDelete = button.getAttribute('data-curso-id'); // Obtener el ID del curso
+            const cursoNombre = button.getAttribute('data-curso-nombre'); // Obtener el nombre del curso
+
+            document.getElementById('curso_a_eliminar_nombre').textContent = cursoNombre;
+        });
+    }
+
+    if (confirmarEliminarBtn) {
+        confirmarEliminarBtn.addEventListener('click', async function() {
+            if (!cursoIdToDelete) {
+                showAlert('No se pudo determinar el curso a eliminar.', 'danger');
+                return;
+            }
+
+            const originalBtnHtml = confirmarEliminarBtn.innerHTML;
+            confirmarEliminarBtn.disabled = true;
+            confirmarEliminarBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Eliminando...';
+
+            try {
+                const response = await fetch(`/cursos/${cursoIdToDelete}/eliminar`, {
+                    method: 'POST', // Tu ruta de Flask para eliminar usa POST
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                const contentType = response.headers.get('content-type');
+                let result;
+                if (contentType && contentType.includes('application/json')) {
+                    result = await response.json();
+                } else {
+                    const text = await response.text();
+                    result = { success: false, message: text || `Error del servidor (${response.status})` };
+                }
+
+                if (response.ok) {
+                    const modal = bootstrap.Modal.getInstance(confirmacionEliminarModal);
+                    modal.hide();
+                    showAlert('Curso eliminado con éxito.', 'success');
+                    setTimeout(() => {
+                        window.location.reload(); 
+                    }, 1500); 
+                } else {
+                    showAlert(result.message || 'No se pudo eliminar el curso.', 'danger');
+                }
+            } catch (error) {
+                console.error('Error de red o del servidor al eliminar:', error);
+                showAlert(`Error: ${error.message || 'Error de red o del servidor'}`, 'danger');
+            } finally {
+                confirmarEliminarBtn.disabled = false;
+                confirmarEliminarBtn.innerHTML = originalBtnHtml;
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

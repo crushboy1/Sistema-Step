@@ -4,42 +4,89 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Sistema{% endblock %}</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-QWTKZyjpPEjISv5WaRU9O5SmXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('home') }}">Inicio</a>
-            <div class="collapse navbar-collapse">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    {% if 'usuario' in session %}
-                    <li class="nav-item"><a class="nav-link" href="http://127.0.0.1:8080/dashboard">Dashboard</a></li>
+                    {# Verifica si el usuario está logeado usando 'user' en la sesión #}
+                    {% if 'user' in session and session['user'] %}
+                        {# Enlaces visibles para todos los usuarios logeados #}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('cursos') }}">Cursos</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('profile') }}">Perfil</a></li>
 
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('estudiantes') }}">Estudiantes</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('nuevo_estudiante') }}">Nuevo Estudiante</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('cursos') }}">Cursos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('nuevo_curso') }}">Nuevo Curso</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Cerrar Sesión</a></li>
-                {% else %}
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Iniciar Sesión</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">Registrarse</a></li>
+                        {# Enlaces condicionales basados en roles #}
+                        {% if has_role(session['user'], 'admin') %}
+                            <li class="nav-item"><a class="nav-link" href="http://127.0.0.1:8080/dashboard">Dashboard</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('estudiantes') }}">Estudiantes</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('nuevo_estudiante') }}">Nuevo Estudiante</a></li>
+                            {# El enlace a "Nuevo Curso" aquí debería ser un botón para abrir el modal, no una ruta directa #}
+                            {# <li class="nav-item"><a class="nav-link" href="{{ url_for('nuevo_curso') }}">Nuevo Curso</a></li> #}
+                        {% elif has_role(session['user'], 'tutor') %}
+                            {# El enlace a "Nuevo Curso" aquí debería ser un botón para abrir el modal, no una ruta directa #}
+                            {# <li class="nav-item"><a class="nav-link" href="{{ url_for('nuevo_curso') }}">Nuevo Curso</a></li> #}
+                        {% endif %}
+
+                        {# Enlace de Cerrar Sesión #}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Cerrar Sesión</a></li>
+                    {% else %}
+                        {# Enlaces para usuarios no logeados #}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Iniciar Sesión</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">Registrarse</a></li>
                     {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
+
     <div class="container mt-4">
+        {# === CENTRALIZADO: Mensajes Flash de Flask aquí === #}
         {% with messages = get_flashed_messages(with_categories=True) %}
             {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}" role="alert">
-                        {{ message }}
-                    </div>
-                {% endfor %}
+                <div id="flash-messages-container"> {# Añadido el ID aquí #}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show mb-3" role="alert"> {# Añadido mb-3 para margen inferior #}
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                </div>
             {% endif %}
         {% endwith %}
+        {# === FIN DEL BLOQUE CENTRALIZADO === #}
+
         {% block content %}{% endblock %}
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    {# Script para que los mensajes Flash desaparezcan automáticamente #}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashMessagesContainer = document.getElementById('flash-messages-container');
+            if (flashMessagesContainer) {
+                const alerts = flashMessagesContainer.querySelectorAll('.alert');
+                alerts.forEach(alert => {
+                    setTimeout(() => {
+                        // Usar la instancia de Alert de Bootstrap para un cierre animado
+                        const bsAlert = bootstrap.Alert.getInstance(alert);
+                        if (bsAlert) {
+                            bsAlert.hide(); 
+                        } else {
+                            // Si por alguna razón no se puede obtener la instancia, simplemente remueve el elemento
+                            alert.remove();
+                        }
+                    }, 2000); // 2000 milisegundos = 2 segundos
+                });
+            }
+        });
+    </script>
 </body>
 </html>

@@ -1,0 +1,63 @@
+<div class="modal fade" id="verCursoModal" tabindex="-1" aria-labelledby="verCursoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="verCursoModalLabel">Detalles del Curso: <span id="ver_nombre_curso"></span></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <h6 class="text-primary">Descripción:</h6>
+            <p id="ver_descripcion" class="text-muted"></p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <h6 class="text-primary">Monto:</h6>
+            <p id="ver_monto" class="text-muted"></p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <h6 class="text-primary">Frecuencia:</h6>
+            <p id="ver_frecuencia" class="text-muted"></p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <h6 class="text-primary">Tutor:</h6>
+            <p id="ver_tutor_nombre" class="text-muted"></p>
+          </div>
+        </div>
+        
+        <hr class="my-3">
+
+        <h5 class="mb-3 text-secondary">Información Adicional:</h5>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <h6 class="text-primary">Días de Tutoría:</h6>
+            <p id="ver_dias_tutoria" class="text-muted"></p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <h6 class="text-primary">Forma de Pago:</h6>
+            <p id="ver_forma_pago" class="text-muted"></p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <h6 class="text-primary">Número de Contacto del Tutor:</h6>
+            <p id="ver_numero_tutor" class="text-muted"></p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <h6 class="text-primary">Otros Detalles:</h6>
+            <p id="ver_otros" class="text-muted"></p>
+          </div>
+        </div>
+
+        <div class="text-center mt-4">
+          <img id="ver_imagen_url" src="" alt="Imagen del curso" class="img-fluid rounded shadow-sm" style="max-height: 250px; object-fit: cover; display: none;">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->timestamp('last_login_at')->nullable()->after('remember_token');
+        Schema::table('courses', function (Blueprint $table) {
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null'); // Foreign key al tutor
         });
     }
 
@@ -21,8 +21,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('last_login_at');
+        Schema::table('courses', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
+            $table->dropColumn('user_id');
         });
     }
 };

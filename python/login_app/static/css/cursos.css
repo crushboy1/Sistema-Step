@@ -1,0 +1,197 @@
+/* ====== Estilos generales del modal ====== */
+.modal-header {
+    background-color: #198754;
+    color: white;
+    border-bottom: none;
+}
+
+.modal-title {
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+.modal-body label {
+    font-weight: 600;
+}
+
+.modal-footer {
+    background-color: #f8f9fa;
+    border-top: none;
+}
+
+.modal .btn-success {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+.modal .btn-success:hover {
+    background-color: #157347;
+    border-color: #146c43;
+}
+
+.modal .btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.modal .btn-secondary:hover {
+    background-color: #5c636a;
+    border-color: #565e64;
+}
+
+.modal input[type="text"],
+.modal input[type="number"],
+.modal input[type="file"],
+.modal textarea {
+    border-radius: 0.25rem;
+}
+
+/* ====== Estilo para tarjetas de cursos ====== */
+.curso-card {
+    border-radius: 1rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+    background-color: #ffffff;
+}
+
+.curso-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+}
+
+.curso-img {
+    height: 200px;
+    object-fit: cover;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+}
+
+/* ====== Tipografía y colores ====== */
+.card-header.card-title {
+    background-color: #e0f7fa; /* color suave */
+    font-weight: 600;
+    font-size: 1.25rem;
+    padding: 0.75rem 1rem;
+    color: #00796b;
+    border-bottom: 1px solid #ccc;
+}
+
+.card-text {
+    font-size: 0.95rem;
+    color: #555;
+}
+
+.btn-sm {
+    font-size: 0.85rem;
+    padding: 0.35rem 0.6rem;
+    border-radius: 6px;
+}
+
+.btn-outline-primary {
+    border-color: #007bff;
+    color: #007bff;
+}
+
+.btn-outline-primary:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-outline-warning {
+    border-color: #ffc107;
+    color: #ffc107;
+}
+
+.btn-outline-warning:hover {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.btn-outline-danger {
+    border-color: #dc3545;
+    color: #dc3545;
+}
+
+.btn-outline-danger:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* ====== Usuario y formulario de búsqueda ====== */
+.user-info-display {
+    border-left: 5px solid #17a2b8;
+    background-color: #e9f7fb;
+    padding: 1rem;
+    border-radius: 10px;
+    font-size: 0.95rem;
+}
+
+.input-group .form-control {
+    border-radius: 10px 0 0 10px;
+    box-shadow: none;
+    border-color: #ced4da;
+}
+
+.input-group .btn {
+    border-radius: 0 10px 10px 0;
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+}
+
+.input-group .btn:hover {
+    background-color: #0056b3;
+    border-color: #004a99;
+}
+
+h2 {
+    color: #007bff;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+/* ====== Botón de Nuevo Curso ====== */
+/* Estilo base para botones sin relleno y con hover verde */
+.btn-outline-success {
+    color: #198754;
+    border: 2px solid #198754;
+    background-color: transparent;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.btn-outline-success:hover {
+    background-color: #198754;
+    color: white;
+}
+
+/* Aplicación específica a los botones Publicar y Registrarse */
+.btn-publicar, .btn-registrar {
+    color: #198754;
+    border: 2px solid #198754;
+    background-color: transparent;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.btn-publicar:hover, .btn-registrar:hover {
+    background-color: #198754;
+    color: white;
+}
+/* Estilo para el dropdown de frecuencia */
+select[name="frecuencia"] {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    padding: 0.5rem;
+    font-size: 1rem;
+    background-color: #fff;
+    transition: border-color 0.2s;
+}
+
+select[name="frecuencia"]:focus {
+    border-color: #198754;
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
+}

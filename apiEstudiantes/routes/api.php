@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthApiController;
 use App\Http\Controllers\Api\EstudianteApiController;
 use App\Http\Controllers\Api\CursoApiController;
-
+use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\EstudianteSoapController;
 use App\Http\Controllers\CursoSoapController;
 
@@ -30,17 +30,18 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('estudiantes/{id}', [EstudianteApiController::class, 'update']); 
         Route::delete('estudiantes/{id}', [EstudianteApiController::class, 'destroy']); 
         
-        Route::post('/estudiantes/{id}/asignar-curso', [EstudianteApiController::class, 'asignarCurso']);
-        Route::put('/estudiantes/{id}/actualizar-curso/{cursoId}', [EstudianteApiController::class, 'actualizarCurso']);
+        Route::post('estudiantes/{id}/asignar-curso', [EstudianteApiController::class, 'asignarCurso']);
+        Route::put('estudiantes/{id}/actualizar-curso/{cursoId}', [EstudianteApiController::class, 'actualizarCurso']);
 
 
         
         Route::apiResource('cursos', CursoApiController::class); 
-
+        Route::prefix('admin')->group(function () {
+        Route::apiResource('users', UserController::class);
+    });
         
-        
-        Route::post('/soap', [EstudianteSoapController::class, 'index']); 
-        Route::post('soap_cursos', [CursoSoapController::class, 'index']); 
+       // Route::post('/soap', [EstudianteSoapController::class, 'index']); 
+       // Route::post('soap_cursos', [CursoSoapController::class, 'index']); 
 
     });
 

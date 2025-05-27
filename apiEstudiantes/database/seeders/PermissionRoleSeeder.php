@@ -29,8 +29,7 @@ class PermissionRoleSeeder extends Seeder
         $editUserPermission = Permission::where('name', 'edit_user')->first();
         $deleteUserPermission = Permission::where('name', 'delete_user')->first();
 
-        // Asignar permisos a roles en la tabla pivote 'permission_role'
-        // Administrador: Todos los permisos (o casi todos, ajusta según necesites)
+       
         if ($adminRole) {
             $adminRole->permissions()->attach([
                 $viewCoursesPermission->id,
@@ -38,15 +37,15 @@ class PermissionRoleSeeder extends Seeder
                 $viewCourseDetailsPermission->id,
                 $editCoursePermission->id,
                 $deleteCoursePermission->id,
-                $registerCoursePermission->id, // Si el administrador también puede registrarse en cursos
+                $registerCoursePermission->id, 
                 $viewUsersPermission->id,
                 $editUserPermission->id,
                 $deleteUserPermission->id,
-                // Añade aquí los IDs de otros permisos que deba tener el administrador
+              
             ]);
         }
 
-        // Tutor: Ver, Crear, Ver Detalles, Editar, Eliminar cursos
+        
         if ($tutorRole) {
             $tutorRole->permissions()->attach([
                 $viewCoursesPermission->id,
@@ -57,7 +56,7 @@ class PermissionRoleSeeder extends Seeder
             ]);
         }
 
-        // Estudiante: Ver Cursos, Ver Detalles de Curso, Registrarse en Curso
+     
         if ($estudianteRole) {
             $estudianteRole->permissions()->attach([
                 $viewCoursesPermission->id,

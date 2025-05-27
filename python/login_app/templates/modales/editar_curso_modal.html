@@ -1,0 +1,53 @@
+<div class="modal fade" id="editarCursoModal" tabindex="-1" aria-labelledby="editarCursoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form id="editarCursoForm" action="" method="POST"> 
+        <div class="modal-header">
+          <h5 class="modal-title" id="editarCursoModalLabel">Editar Curso</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="edit_nombre" class="form-label">Nombre del Curso <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" name="nombre" id="edit_nombre" required>
+            <div class="invalid-feedback" id="edit_nombre-error"></div>
+          </div>
+          <div class="mb-3">
+            <label for="edit_descripcion" class="form-label">Descripción</label>
+            <textarea class="form-control" name="descripcion" id="edit_descripcion" rows="3"></textarea>
+            <div class="invalid-feedback" id="edit_descripcion-error"></div>
+          </div>
+          <div class="mb-3">
+            <label for="edit_monto" class="form-label">Monto (S/.) <span class="text-danger">*</span></label>
+            <input type="number" step="0.01" class="form-control" name="monto" id="edit_monto" required min="0">
+            <div class="invalid-feedback" id="edit_monto-error"></div>
+          </div>
+          <div class="mb-3">
+            <label for="edit_frecuencia" class="form-label">Frecuencia <span class="text-danger">*</span></label>
+            <select name="frecuencia" class="form-select" id="edit_frecuencia" required>
+              <option value="">Seleccionar frecuencia</option>
+              <option value="Diario">Diario</option>
+              <option value="Semanal">Semanal</option>
+              <option value="Personalizado">Personalizado</option>
+            </select>
+            <div class="invalid-feedback" id="edit_frecuencia-error"></div>
+          </div>
+          <div class="mb-3">
+            <label for="edit_imagen_url" class="form-label">URL de la Imagen</label>
+            <input type="url" class="form-control" name="imagen_url" id="edit_imagen_url" placeholder="https://ejemplo.com/imagen.jpg">
+            <div class="form-text">Dejar en blanco si no hay imagen.</div>
+            <div class="invalid-feedback" id="edit_imagen_url-error"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times me-1"></i>Cancelar
+          </button>
+          <button type="submit" class="btn btn-success">
+            <i class="fas fa-save me-1"></i>Guardar Cambios
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
