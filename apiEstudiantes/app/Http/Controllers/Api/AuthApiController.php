@@ -32,11 +32,11 @@ class AuthApiController extends Controller
             // Se han añadido 'last_name', 'number' y 'role' a la validación.
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
-                'last_name' => 'required|string|max:255', // Campo: Apellidos
-                'number' => 'required|string|max:20',    // Campo: Teléfono
+                'last_name' => 'required|string|max:255', 
+                'number' => 'required|string|max:20',    
                 'email' => 'required|email|unique:users',
                 'password' => 'required|min:6|confirmed',
-                'role' => 'required|string|in:tutor,estudiante', // El rol debe ser 'tutor' o 'estudiante'
+                'role' => 'required|string|in:tutor,estudiante', 
             ]);
             Log::info('Datos de registro validados correctamente.', $validatedData);
 

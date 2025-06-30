@@ -158,6 +158,6 @@ class User extends Authenticatable
 
     public function getNumeroContactoAttribute()
     {
-        return $this->number; // Asumiendo que el campo en la DB es 'phone_number'
+        return $this->number;
     }
 }
