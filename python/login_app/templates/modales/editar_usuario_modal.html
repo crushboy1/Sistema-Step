@@ -1,0 +1,87 @@
+<div class="modal fade" id="editarUsuarioModal" tabindex="-1" aria-labelledby="editarUsuarioModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form id="editarUsuarioForm" action="" method="POST"> 
+        <div class="modal-header">
+          <h5 class="modal-title" id="editarUsuarioModalLabel">
+            <i class="fas fa-edit me-2"></i>Editar Usuario
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="edit_usuario_name" class="form-label">Nombre <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" name="name" id="edit_usuario_name" required>
+                <div class="invalid-feedback" id="edit_usuario_name-error"></div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="edit_usuario_last_name" class="form-label">Apellido <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" name="last_name" id="edit_usuario_last_name" required>
+                <div class="invalid-feedback" id="edit_usuario_last_name-error"></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="edit_usuario_email" class="form-label">Email <span class="text-danger">*</span></label>
+                <input type="email" class="form-control" name="email" id="edit_usuario_email" required>
+                <div class="invalid-feedback" id="edit_usuario_email-error"></div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="edit_usuario_number" class="form-label">Número de Teléfono <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" name="number" id="edit_usuario_number" required>
+                <div class="invalid-feedback" id="edit_usuario_number-error"></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="edit_usuario_password" class="form-label">Nueva Contraseña</label>
+            <input type="password" class="form-control" name="password" id="edit_usuario_password">
+            <div class="form-text">Deja en blanco para mantener la contraseña actual</div>
+            <div class="invalid-feedback" id="edit_usuario_password-error"></div>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label">Roles <span class="text-danger">*</span></label>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="roles" value="administrador" id="edit_role_admin">
+              <label class="form-check-label" for="edit_role_admin">
+                Administrador
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="roles" value="tutor" id="edit_role_tutor">
+              <label class="form-check-label" for="edit_role_tutor">
+                Tutor
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="roles" value="estudiante" id="edit_role_estudiante">
+              <label class="form-check-label" for="edit_role_estudiante">
+                Estudiante
+              </label>
+            </div>
+            <div class="invalid-feedback" id="edit_usuario_roles-error"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times me-1"></i>Cancelar
+          </button>
+          <button type="submit" class="btn btn-success">
+            <i class="fas fa-save me-1"></i>Guardar Cambios
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div> 

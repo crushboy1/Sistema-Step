@@ -22,11 +22,15 @@
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('cursos') }}">Cursos</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('profile') }}">Perfil</a></li>
 
+
                         {# Enlaces condicionales basados en roles #}
-                        {% if has_role(session['user'], 'admin') %}
+                        {% if has_role(session['user'], 'administrador') %}
                             <li class="nav-item"><a class="nav-link" href="http://127.0.0.1:8080/dashboard">Dashboard</a></li>
                             <li class="nav-item"><a class="nav-link" href="{{ url_for('estudiantes') }}">Estudiantes</a></li>
                             <li class="nav-item"><a class="nav-link" href="{{ url_for('nuevo_estudiante') }}">Nuevo Estudiante</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('usuarios') }}">Gestión de Usuarios</a></li>
+
+
                             {# El enlace a "Nuevo Curso" aquí debería ser un botón para abrir el modal, no una ruta directa #}
                             {# <li class="nav-item"><a class="nav-link" href="{{ url_for('nuevo_curso') }}">Nuevo Curso</a></li> #}
                         {% elif has_role(session['user'], 'tutor') %}

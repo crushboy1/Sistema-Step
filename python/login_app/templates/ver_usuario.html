@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Ver Usuario{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-user me-2"></i>Detalles del Usuario
+                    </h3>
+                    <div>
+                        <a href="{{ url_for('cursos') }}" class="btn btn-outline-secondary btn-sm me-2">
+                            <i class="fas fa-arrow-left me-1"></i>Volver a Cursos
+                        </a>
+                        <a href="{{ url_for('editar_usuario', id=usuario.id) }}" class="btn btn-warning btn-sm me-2">
+                            <i class="fas fa-edit me-1"></i>Editar
+                        </a>
+                        <a href="{{ url_for('usuarios') }}" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-list me-1"></i>Lista de Usuarios
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center mb-4">
+                            <div class="avatar-lg bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 120px; height: 120px; font-size: 3rem;">
+                                {{ usuario.name[0] if usuario.name else 'U' }}
+                            </div>
+                            <h4 class="mb-1">{{ usuario.name }} {{ usuario.last_name }}</h4>
+                            <p class="text-muted mb-2">{{ usuario.email }}</p>
+                            {% if usuario.email_verified_at %}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check-circle me-1"></i>Email Verificado
+                                </span>
+                            {% else %}
+                                <span class="badge bg-warning">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>Email No Verificado
+                                </span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-8">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card border-0 bg-light">
+                                        <div class="card-body">
+                                            <h6 class="card-title text-primary">
+                                                <i class="fas fa-user me-2"></i>Información Personal
+                                            </h6>
+                                            <div class="mb-2">
+                                                <small class="text-muted">ID de Usuario</small>
+                                                <div><strong>{{ usuario.id }}</strong></div>
+                                            </div>
+                                            <div class="mb-2">
+                                                <small class="text-muted">Nombre</small>
+                                                <div><strong>{{ usuario.name }}</strong></div>
+                                            </div>
+                                            <div class="mb-2">
+                                                <small class="text-muted">Apellido</small>
+                                                <div><strong>{{ usuario.last_name }}</strong></div>
+                                            </div>
+                                            <div class="mb-2">
+                                                <small class="text-muted">Teléfono</small>
+                                                <div><strong>{{ usuario.number or 'No especificado' }}</strong></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="card border-0 bg-light">
+                                        <div class="card-body">
+                                            <h6 class="card-title text-primary">
+                                                <i class="fas fa-shield-alt me-2"></i>Roles y Permisos
+                                            </h6>
+                                            <div class="mb-3">
+                                                <small class="text-muted">Roles asignados</small>
+                                                <div class="mt-2">
+                                                    {% if usuario.roles %}
+                                                        {% for rol in usuario.roles %}
+                                                            {% if rol.name == 'administrador' %}
+                                                                <span class="badge bg-danger me-1">{{ rol.name }}</span>
+                                                            {% elif rol.name == 'tutor' %}
+                                                                <span class="badge bg-warning me-1">{{ rol.name }}</span>
+                                                            {% elif rol.name == 'estudiante' %}
+                                                                <span class="badge bg-info me-1">{{ rol.name }}</span>
+                                                            {% else %}
+                                                                <span class="badge bg-secondary me-1">{{ rol.name }}</span>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        <span class="badge bg-light text-dark">Sin roles asignados</span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            
+                                            <h6 class="card-title text-primary mt-3">
+                                                <i class="fas fa-clock me-2"></i>Información del Sistema
+                                            </h6>
+                                            <div class="mb-2">
+                                                <small class="text-muted">Fecha de registro</small>
+                                                <div><strong>{{ usuario.created_at | datetimeformat if usuario.created_at else 'N/A' }}</strong></div>
+                                            </div>
+                                            <div class="mb-2">
+                                                <small class="text-muted">Última actualización</small>
+                                                <div><strong>{{ usuario.updated_at | datetimeformat if usuario.updated_at else 'N/A' }}</strong></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

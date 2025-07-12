@@ -115,7 +115,7 @@ class UserController extends Controller
     public function show($id)
     {
         $admin = Auth::user();
-        if (!$admin || !$admin->hasRole('admin')) {
+        if (!$admin || !$admin->hasRole('administrador')) {
             Log::warning('Non-admin user or unauthenticated user attempted to view a user.', ['user_id' => $admin ? $admin->id : 'guest']);
             return response()->json(['message' => 'Acceso denegado. Solo administradores.'], 403);
         }
@@ -142,7 +142,7 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $admin = Auth::user();
-        if (!$admin || !$admin->hasRole('admin')) {
+        if (!$admin || !$admin->hasRole('administrador')) {
             Log::warning('Non-admin user or unauthenticated user attempted to update a user.', ['user_id' => $admin ? $admin->id : 'guest']);
             return response()->json(['message' => 'Acceso denegado. Solo administradores.'], 403);
         }
@@ -158,7 +158,7 @@ class UserController extends Controller
             }
 
             // No permitir que un admin se despoje a sí mismo del rol de admin accidentalmente
-            if ($user->id === $admin->id && isset($request->role_names) && !in_array('admin', $request->role_names)) {
+            if ($user->id === $admin->id && isset($request->role_names) && !in_array('administrador', $request->role_names)) {
                 Log::warning('Admin attempted to remove own admin role.', ['admin_id' => $admin->id]);
                 return response()->json(['message' => 'No puedes quitarte a ti mismo el rol de administrador.'], 403);
             }
@@ -173,6 +173,7 @@ class UserController extends Controller
                 'role_names.*' => 'string|exists:roles,name',
             ]);
             Log::info('Validated data for user update by admin.', $validatedData);
+            Log::info('Raw request data:', $request->all()); // Debug: datos crudos recibidos
 
             // Actualizar campos del usuario
             if (isset($validatedData['password'])) {
@@ -184,9 +185,13 @@ class UserController extends Controller
 
             // Actualizar roles del usuario
             if (isset($validatedData['role_names'])) {
+                Log::info('Updating roles for user.', ['user_id' => $user->id, 'role_names' => $validatedData['role_names']]);
                 $roles = Role::whereIn('name', $validatedData['role_names'])->get();
+                Log::info('Found roles in database:', ['roles' => $roles->pluck('name')->toArray()]);
                 $user->roles()->sync($roles->pluck('id'));
                 Log::info('Roles updated for user.', ['user_id' => $user->id, 'roles' => $roles->pluck('name')->toArray()]);
+            } else {
+                Log::info('No role_names provided, skipping role update.');
             }
 
             // Recargar el usuario con sus roles para la respuesta
@@ -212,7 +217,7 @@ class UserController extends Controller
     public function destroy($id)
     {
         $admin = Auth::user();
-        if (!$admin || !$admin->hasRole('admin')) {
+        if (!$admin || !$admin->hasRole('administrador')) {
             Log::warning('Non-admin user or unauthenticated user attempted to delete a user.', ['user_id' => $admin ? $admin->id : 'guest']);
             return response()->json(['message' => 'Acceso denegado. Solo administradores.'], 403);
         }
