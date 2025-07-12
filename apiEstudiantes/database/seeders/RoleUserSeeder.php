@@ -7,6 +7,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB; // Importar la fachada DB
 use App\Models\User; // Importar el modelo User
 use App\Models\Role; // Importar el modelo Role
+use Illuminate\Support\Facades\Hash; // Importar la fachada Hash
 class RoleUserSeeder extends Seeder
 {
     /**

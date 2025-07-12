@@ -29,7 +29,7 @@ class UserController extends Controller
     public function index()
     {
         $user = Auth::user();
-        if (!$user || !$user->hasRole('admin')) {
+        if (!$user || !$user->hasRole('administrador')) {
             Log::warning('Non-admin user or unauthenticated user attempted to access all users list.');
             return response()->json(['message' => 'Acceso denegado. Solo administradores.'], 403);
         }
@@ -50,7 +50,7 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $admin = Auth::user();
-        if (!$admin || !$admin->hasRole('admin')) {
+        if (!$admin || !$admin->hasRole('administrador')) {
             Log::warning('Non-admin user or unauthenticated user attempted to create a user.');
             return response()->json(['message' => 'Acceso denegado. Solo administradores.'], 403);
         }

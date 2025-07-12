@@ -1356,6 +1356,40 @@ def profile():
         return redirect(url_for("login"))
 
 
+# --- Gestión de usuarios (solo admin) ---
+@app.route("/usuarios", methods=["GET"])
+def usuarios():
+    # Verificar autenticación y rol admin
+    if 'token' not in session or 'user' not in session:
+        print("Usuario en sesión:", session['user'])
+        print("Roles:", session['user'].get('roles'))
+        flash("Debes iniciar sesión como administrador para acceder a la gestión de usuarios.", "danger")
+        return redirect(url_for("login"))
+    current_user = session['user']
+    if not has_role_helper(current_user, 'administrador'):
+        flash("Acceso denegado: solo administradores.", "danger")
+        return redirect(url_for("cursos"))
+    # Consumir API de Laravel para obtener usuarios
+    headers = {"Authorization": f"Bearer {session['token']}", "Accept": "application/json"}
+    try:
+        response = requests.get(f"{API_URL_BASE}/admin/users", headers=headers)
+        if response.status_code == 200:
+            usuarios = response.json()
+            return render_template("usuarios.html", usuarios=usuarios)
+        else:
+            flash(f"Error al obtener usuarios: {response.status_code}", "danger")
+            return render_template("usuarios.html", usuarios=[])
+    except Exception as e:
+        flash(f"Error de conexión con la API: {e}", "danger")
+        return render_template("usuarios.html", usuarios=[])
+
+
+@app.route("/usuarios/nuevo")
+def nuevo_usuario():
+    flash("Funcionalidad en desarrollo.", "info")
+    return redirect(url_for("usuarios"))
+
+
 if __name__ == '__main__':
     
     app.run(debug=True, host='127.0.0.1', port=5000)
