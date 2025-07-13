@@ -63,7 +63,14 @@ class UserController extends Controller
                 'last_name' => 'required|string|max:255',
                 'number' => 'required|string|max:20',
                 'email' => 'required|email|unique:users',
-                'password' => 'required|min:6',
+                'password' => [
+                    'required',
+                    'string',
+                    'min:8',
+                    'max:255',
+                    'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/',
+                    'confirmed'
+                ],
                 'role_names' => 'nullable|array', // Array de nombres de roles (ej. ['admin', 'tutor'])
                 'role_names.*' => 'string|exists:roles,name', // Cada nombre de rol debe existir en la tabla 'roles'
             ]);

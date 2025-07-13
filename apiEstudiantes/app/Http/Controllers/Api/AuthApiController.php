@@ -35,7 +35,14 @@ class AuthApiController extends Controller
                 'last_name' => 'required|string|max:255', 
                 'number' => 'required|string|max:20',    
                 'email' => 'required|email|unique:users',
-                'password' => 'required|min:6|confirmed',
+                'password' => [
+                    'required',
+                    'string',
+                    'min:8',
+                    'max:255',
+                    'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/',
+                    'confirmed'
+                ],
                 'role' => 'required|string|in:tutor,estudiante', 
             ]);
             Log::info('Datos de registro validados correctamente.', $validatedData);

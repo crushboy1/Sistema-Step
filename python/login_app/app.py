@@ -1534,7 +1534,7 @@ def eliminar_usuario(id):
     
     headers = {"Authorization": f"Bearer {session['token']}", "Accept": "application/json"}
     try:
-        response = requests.delete(f"{API_URL_BASE}/admin/users/{id}", headers=headers)
+        response = requests.delete(f"{API_URL_BASE}/users/{id}", headers=headers)
         if response.status_code == 200:
             flash("Usuario eliminado exitosamente.", "success")
         else:
