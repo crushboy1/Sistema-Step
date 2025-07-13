@@ -1,260 +1,93 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Sistema de Gestión de Estudiantes en Python</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-image: url('/static/img/3.jpeg'); /* Cambia la ruta a la imagen que deseas usar */
-            background-size: cover;
-            background-position: center;
-            color: #333;
-        }
-        .navbar {
-            background-color: #007bff;
-        }
-
-        .navbar-brand {
-            font-weight: bold;
-            color: #fff;
-        }
-
-        .navbar-nav .nav-link {
-            color: #fff !important;
-            font-size: 1.2rem;
-        }
-
-        .navbar-nav .nav-link:hover {
-            color: #f8f9fa !important;
-        }
-
-        .jumbotron {
-            background-color: rgba(233, 244, 249, 0.8);
-            color: #007bff;
-            padding: 3rem 2rem;
-            margin-bottom: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .jumbotron h1 {
-            font-size: 3rem;
-            font-weight: bold;
-            letter-spacing: 1px;
-        }
-
-        .jumbotron p {
-            font-size: 1.1rem;
-        }
-
-        .card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            margin-bottom: 20px;
-            border-radius: 10px;
-            background-color: #fff;
-            color: #333;
-        }
-
-        .card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-
-        .feature-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            color: #007bff;
-        }
-
-        .process-image, .feature-image {
-            max-width: 100%;
-            height: auto;
-            border-radius: 10px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-
-        .animated-section {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s, transform 0.5s;
-        }
-
-        .animated-section.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        #student-profile {
-            display: none;
-        }
-
-        .profile-icon {
-            font-size: 6rem;
-            color: #007bff;
-            margin-bottom: 1rem;
-        }
-
-        .progress {
-            height: 30px;
-            border-radius: 10px;
-        }
-
-        .progress-bar {
-            line-height: 30px;
-            font-size: 1.1rem;
-            font-weight: bold;
-        }
-
-        footer {
-            background-color: #333;
-            color: #fff;
-            padding: 20px;
-        }
-
-        .btn {
-            border-radius: 50px;
-            font-size: 1.1rem;
-            font-weight: bold;
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-            border: none;
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Editar Perfil</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+  <style>
+    body {
+      background-image: url('/static/img/3.jpeg');
+      background-size: cover;
+      background-position: center;
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+    }
+    .form-container {
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    h2 {
+      color: #007bff;
+    }
+  </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container">
-        <a class="navbar-brand" href="#">Gestión Educativa</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" href="#inicio">Inicio</a></li>
-                <li class="nav-item"><a class="nav-link" href="#funcionalidades">Funcionalidades</a></li>
-                <li class="nav-item"><a class="nav-link" href="#proceso">Proceso</a></li>
-                <li class="nav-item"><a class="nav-link" href="#demo">Demo</a></li>
-            </ul>
+  <div class="container">
+    <div class="form-container mx-auto col-md-6 position-relative">
+      <h2 class="mb-4 text-center">Editar Perfil</h2>
+
+      <!-- Formulario principal -->
+      <form action="{{ url_for('profile') }}" method="POST">
+        <div class="mb-3">
+          <label for="name" class="form-label">Nombre completo</label>
+          <input
+            type="text"
+            class="form-control"
+            id="name"
+            name="name"
+            value="{{ usuario.name if usuario.name else '' }}"
+            placeholder="Ingresa tu nombre completo"
+            required
+          >
         </div>
-    </div>
-    <a href="{{ url_for('login') }}" class="btn btn-primary">Comenzar a probar el sistema</a>
-</nav>
-
-<div class="jumbotron text-center" id="inicio">
-    <h1 class="display-4">Sistema de Gestión de Estudiantes y Cursos</h1>
-    <p class="lead">Usando Python y diseñado para la administración académica.</p>
-    <p class="card-text">
-        El sistema facilita la separación de responsabilidades entre la lógica del negocio, la presentación y el control del flujo de datos, permitiendo una fácil extensibilidad y mantenibilidad.
-    </p>
-</div>
-
-<div class="container">
-    <section id="funcionalidades" class="animated-section">
-        <h2 class="text-center mb-5">Funcionalidades Principales</h2>
-        <p class="card-text">
-            El sistema incluye el registro de estudiantes, la asignación de cursos y el seguimiento de su rendimiento académico. Los estudiantes serán clasificados en tres categorías:
-        </p>
-        <ul>
-            <li><i class="fas fa-times-circle"></i> 0-9 puntos: Jalado.</li>
-            <li><i class="fas fa-cogs"></i> 10-16 puntos: En proceso.</li>
-            <li><i class="fas fa-check-circle"></i> 17-20 puntos: Terminado.</li>
-        </ul>
-        <p class="card-text">
-            Además, los administradores pueden buscar estudiantes para ver su progreso.
-        </p>
-    </section>
-
-    <section id="demo" class="mt-5 animated-section">
-        <h2 class="text-center mb-5">Demo Interactiva</h2>
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Simulador de Perfil de Estudiante</h5>
-                        <p>Ingrese los datos del estudiante para generar un perfil:</p>
-                        <form id="student-form">
-                            <div class="mb-3">
-                                <label for="student-id" class="form-label">ID del Estudiante</label>
-                                <input type="text" class="form-control" id="student-id" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="student-name" class="form-label">Nombre del Estudiante</label>
-                                <input type="text" class="form-control" id="student-name" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="course-name" class="form-label">Nombre del Curso</label>
-                                <input type="text" class="form-control" id="course-name" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="course-grade" class="form-label">Nota del Curso (0-20)</label>
-                                <input type="number" class="form-control" id="course-grade" min="0" max="20" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Generar Perfil</button>
-                        </form>
-                        <div id="student-profile" class="mt-4">
-                            <h4 class="text-center">Perfil del Estudiante</h4>
-                            <div class="text-center">
-                                <i class="fas fa-user-graduate profile-icon"></i>
-                            </div>
-                            <p><strong>ID:</strong> <span id="profile-id"></span></p>
-                            <p><strong>Nombre:</strong> <span id="profile-name"></span></p>
-                            <p><strong>Curso:</strong> <span id="profile-course"></span></p>
-                            <p><strong>Nota del Curso:</strong> <span id="profile-grade"></span></p>
-                            <p><strong>Estado:</strong> <span id="profile-status"></span></p>
-                            <div class="progress mt-3">
-                                <div id="profile-progress" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="mb-3">
+          <label for="email" class="form-label">Correo electrónico</label>
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            name="email"
+            value="{{ usuario.email if usuario.email else '' }}"
+            placeholder="tucorreo@ejemplo.com"
+            required
+          >
         </div>
-    </section>
-</div>
+        <div class="mb-3">
+          <label for="telefono" class="form-label">Teléfono</label>
+          <input
+            type="text"
+            class="form-control"
+            id="telefono"
+            name="telefono"
+            value="{{ usuario.telefono if usuario.telefono else '' }}"
+            placeholder="Número de teléfono (opcional)"
+          >
+        </div>
 
-<footer class="bg-dark text-light text-center py-3 mt-5">
-    <p>&copy; 2023 Sistema de Gestión de Estudiantes. Todos los derechos reservados.</p>
-</footer>
+        <div class="d-flex gap-2">
+          <!-- Cancelar: vuelve a cursos -->
+          <a href="{{ url_for('cursos') }}" class="btn btn-secondary flex-grow-1">
+            Cancelar
+          </a>
+          <!-- Guardar cambios -->
+          <button type="submit" class="btn btn-primary flex-grow-1">
+            Guardar Cambios
+          </button>
+        </div>
+      </form>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const form = document.getElementById("student-form");
-        const profileSection = document.getElementById("student-profile");
-        
-        form.addEventListener("submit", function(event) {
-            event.preventDefault();
 
-            const studentId = document.getElementById("student-id").value;
-            const studentName = document.getElementById("student-name").value;
-            const courseName = document.getElementById("course-name").value;
-            const courseGrade = parseFloat(document.getElementById("course-grade").value);
 
-            const status = courseGrade >= 17 ? "Terminado" : courseGrade >= 10 ? "En proceso" : "Jalado";
-            const progress = courseGrade * 5; // Para la barra de progreso (escala de 0 a 20)
-
-            document.getElementById("profile-id").textContent = studentId;
-            document.getElementById("profile-name").textContent = studentName;
-            document.getElementById("profile-course").textContent = courseName;
-            document.getElementById("profile-grade").textContent = courseGrade;
-            document.getElementById("profile-status").textContent = status;
-            document.getElementById("profile-progress").style.width = progress + "%";
-            
-            profileSection.style.display = "block";
-        });
-    });
-</script>
-
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

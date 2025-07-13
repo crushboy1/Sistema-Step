@@ -35,7 +35,14 @@ class AuthApiController extends Controller
                 'last_name' => 'required|string|max:255', 
                 'number' => 'required|string|max:20',    
                 'email' => 'required|email|unique:users',
-                'password' => 'required|min:6|confirmed',
+                'password' => [
+                    'required',
+                    'string',
+                    'min:8',
+                    'max:255',
+                    'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/',
+                    'confirmed'
+                ],
                 'role' => 'required|string|in:tutor,estudiante', 
             ]);
             Log::info('Datos de registro validados correctamente.', $validatedData);
@@ -337,6 +344,10 @@ class AuthApiController extends Controller
         Log::info('Acceso a ruta protegida /user.');
         $user = $request->user(); // Esto obtendrá el usuario autenticado a través del token Sanctum
         Log::info('Usuario autenticado obtenido.', ['user_id' => $user->id, 'email' => $user->email]);
+        
+        // Cargar los roles del usuario para que estén disponibles en el frontend
+        $user->load('roles');
+        
         return response()->json($user);
     }
 

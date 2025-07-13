@@ -23,8 +23,11 @@ RECAPTCHA_SECRET_KEY = '6Ld6ey0rAAAAANZkkDMFnTkcLRfA5R2skbv5LXBQ'
 # --- Helper para verificar roles en Jinja2 ---
 def has_role_helper(user_data, role_name):
     """Verifica si un usuario tiene un rol específico."""
-    if user_data and 'roles' in user_data:
-        return any(role['name'] == role_name for role in user_data['roles'])
+    if not user_data or not isinstance(user_data, dict):
+        return False
+    if 'roles' not in user_data or not user_data['roles']:
+        return False
+    return any(role.get('name') == role_name for role in user_data['roles']) 
     return False
 # Añadir la función al contexto de Jinja2 para que esté disponible en todas las plantillas
 app.jinja_env.globals.update(has_role=has_role_helper)
@@ -670,7 +673,7 @@ def ver_curso(id):
     
     try:
         # Realiza la solicitud GET a la API de Laravel para obtener los detalles del curso
-        response = requests.get(f"{API_BASE_URL}/cursos/{id}", headers=headers)
+        response = requests.get(f"{API_URL_BASE}/cursos/{id}", headers=headers)
         response.raise_for_status() # Lanza un HTTPError para códigos de estado 4xx/5xx
 
         curso = response.json()
@@ -722,7 +725,7 @@ def nuevo_curso():
     headers = {"Authorization": f"Bearer {token}", "Accept": "application/json"} # Content-Type se añade en la llamada a requests.post
 
     current_user_data = session['user']
-    if not has_role_helper(current_user_data, 'tutor') and not has_role_helper(current_user_data, 'admin'):
+    if not has_role_helper(current_user_data, 'tutor') and not has_role_helper(current_user_data, 'administrador'):
         if request.is_json:
             return jsonify({"success": False, "message": "No tienes permiso para crear cursos."}), 403
         flash("No tienes permiso para crear cursos.", "danger")
@@ -861,7 +864,7 @@ def editar_curso(id):
         
         # Verificar permisos
         if not (
-            has_role_helper(current_user, 'admin') or
+            has_role_helper(current_user, 'administrador') or
             (has_role_helper(current_user, 'tutor') and current_user.get("id") == curso_data.get("user_id"))
         ):
             print(f"DEBUG: Acceso denegado. Usuario ID {current_user.get('id')} no es propietario ni admin.")
@@ -1169,7 +1172,7 @@ def eliminar_curso(id):
         curso_data = curso_response.json()
         
         # Verificar si el usuario es admin o el tutor propietario del curso
-        user_has_admin_role = has_role_helper(current_user_data, 'admin')
+        user_has_admin_role = has_role_helper(current_user_data, 'administrador')
         user_is_tutor_and_owner = (
             has_role_helper(current_user_data, 'tutor') and
             current_user_data.get('id') == curso_data.get('user_id')
@@ -1354,6 +1357,193 @@ def profile():
     else:
         flash("Por favor, inicia sesión.")
         return redirect(url_for("login"))
+
+
+# --- Gestión de usuarios (solo admin) ---
+@app.route("/usuarios", methods=["GET"])
+def usuarios():
+    # Verificar autenticación y rol admin
+    if 'token' not in session or 'user' not in session:
+        flash("Debes iniciar sesión como administrador para acceder a la gestión de usuarios.", "danger")
+        return redirect(url_for("login"))
+    current_user = session['user']
+    if not has_role_helper(current_user, 'administrador'):
+        flash("Acceso denegado: solo administradores.", "danger")
+        return redirect(url_for("cursos"))
+    # Consumir API de Laravel para obtener usuarios
+    headers = {"Authorization": f"Bearer {session['token']}", "Accept": "application/json"}
+    try:
+        response = requests.get(f"{API_URL_BASE}/users", headers=headers)
+        if response.status_code == 200:
+            usuarios = response.json()
+            return render_template("usuarios.html", usuarios=usuarios)
+        else:
+            flash(f"Error al obtener usuarios: {response.status_code}", "danger")
+            return render_template("usuarios.html", usuarios=[])
+    except Exception as e:
+        flash(f"Error de conexión con la API: {e}", "danger")
+        return render_template("usuarios.html", usuarios=[])
+
+@app.route("/usuarios/nuevo", methods=["GET", "POST"])
+def nuevo_usuario():
+    # Verificar autenticación y rol admin
+    if 'token' not in session or 'user' not in session:
+        flash("Debes iniciar sesión como administrador.", "danger")
+        return redirect(url_for("login"))
+    current_user = session['user']
+    if not has_role_helper(current_user, 'administrador'):
+        flash("Acceso denegado: solo administradores.", "danger")
+        return redirect(url_for("cursos"))
+    
+    if request.method == "POST":
+        headers = {"Authorization": f"Bearer {session['token']}", "Accept": "application/json", "Content-Type": "application/json"}
+        
+        # Obtener datos del formulario
+        data = {
+            "name": request.form.get("name"),
+            "last_name": request.form.get("last_name"),
+            "number": request.form.get("number"),
+            "email": request.form.get("email"),
+            "password": request.form.get("password"),
+            "role_names": request.form.getlist("roles")  # Lista de roles seleccionados
+        }
+        
+        try:
+            response = requests.post(f"{API_URL_BASE}/users", headers=headers, json=data)
+            if response.status_code == 201:
+                flash("Usuario creado exitosamente.", "success")
+                return redirect(url_for("usuarios"))
+            else:
+                error_data = response.json()
+                flash(f"Error al crear usuario: {error_data.get('message', 'Error desconocido')}", "danger")
+                return render_template("nuevo_usuario.html", data=data, error=error_data)
+        except Exception as e:
+            flash(f"Error de conexión: {e}", "danger")
+            return render_template("nuevo_usuario.html", data=data)
+    
+    # GET: mostrar formulario
+    return render_template("nuevo_usuario.html")
+
+@app.route("/usuarios/<int:id>", methods=["GET"])
+def ver_usuario(id):
+    # Verificar autenticación y rol admin
+    if 'token' not in session or 'user' not in session:
+        flash("Debes iniciar sesión como administrador.", "danger")
+        return redirect(url_for("login"))
+    current_user = session['user']
+    if not has_role_helper(current_user, 'administrador'):
+        flash("Acceso denegado: solo administradores.", "danger")
+        return redirect(url_for("cursos"))
+    
+    headers = {"Authorization": f"Bearer {session['token']}", "Accept": "application/json"}
+    try:
+        response = requests.get(f"{API_URL_BASE}/users/{id}", headers=headers)
+        if response.status_code == 200:
+            usuario = response.json()
+            return render_template("ver_usuario.html", usuario=usuario)
+        else:
+            flash("Usuario no encontrado.", "danger")
+            return redirect(url_for("usuarios"))
+    except Exception as e:
+        flash(f"Error de conexión: {e}", "danger")
+        return redirect(url_for("usuarios"))
+
+@app.route("/usuarios/<int:id>/editar", methods=["GET", "POST"])
+def editar_usuario(id):
+    # Verificar autenticación y rol admin
+    if 'token' not in session or 'user' not in session:
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({"success": False, "message": "Debes iniciar sesión como administrador."}), 401
+        flash("Debes iniciar sesión como administrador.", "danger")
+        return redirect(url_for("login"))
+    
+    current_user = session['user']
+    if not has_role_helper(current_user, 'administrador'):
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({"success": False, "message": "Acceso denegado: solo administradores."}), 403
+        flash("Acceso denegado: solo administradores.", "danger")
+        return redirect(url_for("cursos"))
+    
+    headers = {"Authorization": f"Bearer {session['token']}", "Accept": "application/json"}
+    
+    if request.method == "POST":
+        headers["Content-Type"] = "application/json"
+        
+        # Obtener datos del formulario (AJAX o normal)
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            data = request.get_json()
+            print(f"DEBUG - Datos recibidos via AJAX: {data}")  # Debug
+        else:
+            data = {
+                "name": request.form.get("name"),
+                "last_name": request.form.get("last_name"),
+                "number": request.form.get("number"),
+                "email": request.form.get("email"),
+                "role_names": request.form.getlist("roles")
+            }
+            # Solo incluir password si se proporcionó uno nuevo
+            password = request.form.get("password")
+            if password:
+                data["password"] = password
+        
+        try:
+            response = requests.put(f"{API_URL_BASE}/users/{id}", headers=headers, json=data)
+            if response.status_code == 200:
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return jsonify({"success": True, "message": "Usuario actualizado exitosamente."})
+                flash("Usuario actualizado exitosamente.", "success")
+                return redirect(url_for("usuarios"))
+            else:
+                error_data = response.json()
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return jsonify({"success": False, "message": error_data.get('message', 'Error desconocido'), "errors": error_data.get('errors', {})}), response.status_code
+                flash(f"Error al actualizar usuario: {error_data.get('message', 'Error desconocido')}", "danger")
+                # Obtener datos actuales del usuario para mostrar en el formulario
+                user_response = requests.get(f"{API_URL_BASE}/users/{id}", headers=headers)
+                if user_response.status_code == 200:
+                    usuario = user_response.json()
+                    return render_template("editar_usuario.html", usuario=usuario, error=error_data)
+        except Exception as e:
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return jsonify({"success": False, "message": f"Error de conexión: {e}"}), 500
+            flash(f"Error de conexión: {e}", "danger")
+    
+    # GET: obtener datos del usuario y mostrar formulario
+    try:
+        response = requests.get(f"{API_URL_BASE}/users/{id}", headers=headers)
+        if response.status_code == 200:
+            usuario = response.json()
+            return render_template("editar_usuario.html", usuario=usuario)
+        else:
+            flash("Usuario no encontrado.", "danger")
+            return redirect(url_for("usuarios"))
+    except Exception as e:
+        flash(f"Error de conexión: {e}", "danger")
+        return redirect(url_for("usuarios"))
+
+@app.route("/usuarios/<int:id>/eliminar", methods=["POST"])
+def eliminar_usuario(id):
+    # Verificar autenticación y rol admin
+    if 'token' not in session or 'user' not in session:
+        flash("Debes iniciar sesión como administrador.", "danger")
+        return redirect(url_for("login"))
+    current_user = session['user']
+    if not has_role_helper(current_user, 'administrador'):
+        flash("Acceso denegado: solo administradores.", "danger")
+        return redirect(url_for("cursos"))
+    
+    headers = {"Authorization": f"Bearer {session['token']}", "Accept": "application/json"}
+    try:
+        response = requests.delete(f"{API_URL_BASE}/users/{id}", headers=headers)
+        if response.status_code == 200:
+            flash("Usuario eliminado exitosamente.", "success")
+        else:
+            error_data = response.json()
+            flash(f"Error al eliminar usuario: {error_data.get('message', 'Error desconocido')}", "danger")
+    except Exception as e:
+        flash(f"Error de conexión: {e}", "danger")
+    
+    return redirect(url_for("usuarios"))
 
 
 if __name__ == '__main__':

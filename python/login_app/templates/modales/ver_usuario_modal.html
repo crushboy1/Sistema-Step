@@ -1,0 +1,92 @@
+<div class="modal fade" id="verUsuarioModal" tabindex="-1" aria-labelledby="verUsuarioModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="verUsuarioModalLabel">
+          <i class="fas fa-user me-2"></i>Detalles del Usuario
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-4 text-center mb-4">
+            <div class="avatar-lg bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 120px; height: 120px; font-size: 3rem;">
+              <span id="ver_usuario_inicial">U</span>
+            </div>
+            <h4 class="mb-1" id="ver_usuario_nombre">Nombre Usuario</h4>
+            <p class="text-muted mb-2" id="ver_usuario_email">email@ejemplo.com</p>
+            <span class="badge" id="ver_usuario_verificado">
+              <i class="fas fa-check-circle me-1"></i>Email Verificado
+            </span>
+          </div>
+          
+          <div class="col-md-8">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="card border-0 bg-light">
+                  <div class="card-body">
+                    <h6 class="card-title text-primary">
+                      <i class="fas fa-user me-2"></i>Información Personal
+                    </h6>
+                    <div class="mb-2">
+                      <small class="text-muted">ID de Usuario</small>
+                      <div><strong id="ver_usuario_id">-</strong></div>
+                    </div>
+                    <div class="mb-2">
+                      <small class="text-muted">Nombre</small>
+                      <div><strong id="ver_usuario_name">-</strong></div>
+                    </div>
+                    <div class="mb-2">
+                      <small class="text-muted">Apellido</small>
+                      <div><strong id="ver_usuario_last_name">-</strong></div>
+                    </div>
+                    <div class="mb-2">
+                      <small class="text-muted">Teléfono</small>
+                      <div><strong id="ver_usuario_number">-</strong></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="card border-0 bg-light">
+                  <div class="card-body">
+                    <h6 class="card-title text-primary">
+                      <i class="fas fa-shield-alt me-2"></i>Roles y Permisos
+                    </h6>
+                    <div class="mb-3">
+                      <small class="text-muted">Roles asignados</small>
+                      <div class="mt-2" id="ver_usuario_roles">
+                        <span class="badge bg-light text-dark">Sin roles asignados</span>
+                      </div>
+                    </div>
+                    
+                    <h6 class="card-title text-primary mt-3">
+                      <i class="fas fa-clock me-2"></i>Información del Sistema
+                    </h6>
+                    <div class="mb-2">
+                      <small class="text-muted">Fecha de registro</small>
+                      <div><strong id="ver_usuario_created_at">-</strong></div>
+                    </div>
+                    <div class="mb-2">
+                      <small class="text-muted">Última actualización</small>
+                      <div><strong id="ver_usuario_updated_at">-</strong></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="fas fa-times me-1"></i>Cerrar
+        </button>
+        <button type="button" class="btn btn-warning" id="btn_editar_usuario_modal">
+          <i class="fas fa-edit me-1"></i>Editar Usuario
+        </button>
+      </div>
+    </div>
+  </div>
+</div> 

@@ -1,0 +1,343 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión de Usuarios{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">
+                <i class="fas fa-users me-2"></i>Gestión de Usuarios
+            </h2>
+            <p class="text-muted mb-0">Administra los usuarios del sistema y sus roles</p>
+        </div>
+        <div>
+            <a href="{{ url_for('cursos') }}" class="btn btn-outline-secondary me-2">
+                <i class="fas fa-arrow-left me-1"></i>Volver a Cursos
+            </a>
+            <a href="{{ url_for('nuevo_usuario') }}" class="btn btn-success">
+                <i class="fas fa-plus me-1"></i>Nuevo Usuario
+            </a>
+        </div>
+    </div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th><i class="fas fa-hashtag me-1"></i>ID</th>
+                            <th><i class="fas fa-user me-1"></i>Nombre Completo</th>
+                            <th><i class="fas fa-envelope me-1"></i>Email</th>
+                            <th><i class="fas fa-phone me-1"></i>Teléfono</th>
+                            <th><i class="fas fa-shield-alt me-1"></i>Roles</th>
+                            <th><i class="fas fa-cogs me-1"></i>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if usuarios %}
+                            {% for usuario in usuarios %}
+                            <tr>
+                                <td><span class="badge bg-secondary">{{ usuario.id }}</span></td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px;">
+                                            {{ usuario.name[0] if usuario.name else 'U' }}
+                                        </div>
+                                        <div>
+                                            <strong>{{ usuario.name }} {{ usuario.last_name }}</strong>
+                                            {% if usuario.email_verified_at %}
+                                                <i class="fas fa-check-circle text-success ms-1" title="Email verificado"></i>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a href="mailto:{{ usuario.email }}" class="text-decoration-none">
+                                        {{ usuario.email }}
+                                    </a>
+                                </td>
+                                <td>{{ usuario.number or 'N/A' }}</td>
+                                <td>
+                                    {% if usuario.roles %}
+                                        {% for rol in usuario.roles %}
+                                            {% if rol.name == 'administrador' %}
+                                                <span class="badge bg-danger me-1">{{ rol.name }}</span>
+                                            {% elif rol.name == 'tutor' %}
+                                                <span class="badge bg-warning me-1">{{ rol.name }}</span>
+                                            {% elif rol.name == 'estudiante' %}
+                                                <span class="badge bg-info me-1">{{ rol.name }}</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary me-1">{{ rol.name }}</span>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="badge bg-light text-dark">Sin roles</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-outline-info btn-sm" title="Ver detalles" 
+                                                data-bs-toggle="modal" data-bs-target="#verUsuarioModal" 
+                                                data-usuario='{{ usuario | tojson }}'>
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-warning btn-sm" title="Editar" 
+                                                data-bs-toggle="modal" data-bs-target="#editarUsuarioModal" 
+                                                data-usuario='{{ usuario | tojson }}'>
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <form method="POST" action="{{ url_for('eliminar_usuario', id=usuario.id) }}" style="display: inline;" onsubmit="return confirm('¿Estás seguro de que quieres eliminar este usuario? Esta acción no se puede deshacer.')">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm" title="Eliminar">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4">
+                                    <div class="text-muted">
+                                        <i class="fas fa-users fa-3x mb-3"></i>
+                                        <p class="mb-0">No hay usuarios registrados</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    {% if usuarios %}
+    <div class="mt-3 text-muted">
+        <small>
+            <i class="fas fa-info-circle me-1"></i>
+            Total de usuarios: {{ usuarios|length }}
+        </small>
+    </div>
+    {% endif %}
+</div>
+
+{# Incluir los modales #}
+{% include 'modales/ver_usuario_modal.html' %}
+{% include 'modales/editar_usuario_modal.html' %}
+
+{# JavaScript para los modales #}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // --- Funciones Auxiliares ---
+    function showAlert(message, type) {
+        document.querySelectorAll('.custom-alert').forEach(alert => alert.remove());
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show custom-alert`;
+        alertDiv.style.position = 'fixed';
+        alertDiv.style.top = '20px';
+        alertDiv.style.right = '20px';
+        alertDiv.style.zIndex = '9999';
+        alertDiv.style.minWidth = '300px';
+        alertDiv.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.body.appendChild(alertDiv);
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+
+    function clearModalErrors(modalId) {
+        document.querySelectorAll(`#${modalId} .is-invalid`).forEach(el => el.classList.remove('is-invalid'));
+        document.querySelectorAll(`#${modalId} .invalid-feedback`).forEach(el => el.textContent = '');
+    }
+
+    // --- Modal VER USUARIO ---
+    const verUsuarioModal = document.getElementById('verUsuarioModal');
+    if (verUsuarioModal) {
+        verUsuarioModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const usuario = JSON.parse(button.getAttribute('data-usuario'));
+            
+            // Llenar datos del modal
+            document.getElementById('ver_usuario_inicial').textContent = usuario.name ? usuario.name[0] : 'U';
+            document.getElementById('ver_usuario_nombre').textContent = `${usuario.name} ${usuario.last_name}`;
+            document.getElementById('ver_usuario_email').textContent = usuario.email;
+            document.getElementById('ver_usuario_id').textContent = usuario.id;
+            document.getElementById('ver_usuario_name').textContent = usuario.name;
+            document.getElementById('ver_usuario_last_name').textContent = usuario.last_name;
+            document.getElementById('ver_usuario_number').textContent = usuario.number || 'No especificado';
+            document.getElementById('ver_usuario_created_at').textContent = usuario.created_at || 'N/A';
+            document.getElementById('ver_usuario_updated_at').textContent = usuario.updated_at || 'N/A';
+            
+            // Estado de verificación de email
+            const verificadoBadge = document.getElementById('ver_usuario_verificado');
+            if (usuario.email_verified_at) {
+                verificadoBadge.className = 'badge bg-success';
+                verificadoBadge.innerHTML = '<i class="fas fa-check-circle me-1"></i>Email Verificado';
+            } else {
+                verificadoBadge.className = 'badge bg-warning';
+                verificadoBadge.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i>Email No Verificado';
+            }
+            
+            // Roles
+            const rolesContainer = document.getElementById('ver_usuario_roles');
+            if (usuario.roles && usuario.roles.length > 0) {
+                let rolesHtml = '';
+                usuario.roles.forEach(rol => {
+                    let badgeClass = 'badge bg-secondary me-1';
+                    if (rol.name === 'administrador') badgeClass = 'badge bg-danger me-1';
+                    else if (rol.name === 'tutor') badgeClass = 'badge bg-warning me-1';
+                    else if (rol.name === 'estudiante') badgeClass = 'badge bg-info me-1';
+                    rolesHtml += `<span class="${badgeClass}">${rol.name}</span>`;
+                });
+                rolesContainer.innerHTML = rolesHtml;
+            } else {
+                rolesContainer.innerHTML = '<span class="badge bg-light text-dark">Sin roles asignados</span>';
+            }
+            
+            // Configurar botón de editar
+            document.getElementById('btn_editar_usuario_modal').onclick = function() {
+                const modal = bootstrap.Modal.getInstance(verUsuarioModal);
+                modal.hide();
+                setTimeout(() => {
+                    const editarModal = new bootstrap.Modal(document.getElementById('editarUsuarioModal'));
+                    editarModal.show();
+                    // Llenar formulario de edición
+                    fillEditForm(usuario);
+                }, 300);
+            };
+        });
+    }
+
+    // --- Modal EDITAR USUARIO ---
+    const editarUsuarioModal = document.getElementById('editarUsuarioModal');
+    const editarUsuarioForm = document.getElementById('editarUsuarioForm');
+    
+    function fillEditForm(usuario) {
+        document.getElementById('edit_usuario_name').value = usuario.name || '';
+        document.getElementById('edit_usuario_last_name').value = usuario.last_name || '';
+        document.getElementById('edit_usuario_email').value = usuario.email || '';
+        document.getElementById('edit_usuario_number').value = usuario.number || '';
+        document.getElementById('edit_usuario_password').value = '';
+        
+        // Limpiar checkboxes de roles
+        document.getElementById('edit_role_admin').checked = false;
+        document.getElementById('edit_role_tutor').checked = false;
+        document.getElementById('edit_role_estudiante').checked = false;
+        
+        // Marcar roles actuales
+        if (usuario.roles) {
+            usuario.roles.forEach(rol => {
+                if (rol.name === 'administrador') document.getElementById('edit_role_admin').checked = true;
+                if (rol.name === 'tutor') document.getElementById('edit_role_tutor').checked = true;
+                if (rol.name === 'estudiante') document.getElementById('edit_role_estudiante').checked = true;
+            });
+        }
+        
+        // Configurar action del formulario
+        editarUsuarioForm.action = `/usuarios/${usuario.id}/editar`;
+    }
+    
+    if (editarUsuarioModal) {
+        editarUsuarioModal.addEventListener('show.bs.modal', function (event) {
+            clearModalErrors('editarUsuarioModal');
+            const button = event.relatedTarget;
+            const usuario = JSON.parse(button.getAttribute('data-usuario'));
+            fillEditForm(usuario);
+        });
+    }
+    
+    // Manejar envío del formulario de edición
+    if (editarUsuarioForm) {
+        editarUsuarioForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            clearModalErrors('editarUsuarioModal');
+            
+            const formData = new FormData(editarUsuarioForm);
+            
+            // Validar que al menos un rol esté seleccionado
+            const rolesSeleccionados = formData.getAll('roles');
+            if (rolesSeleccionados.length === 0) {
+                showAlert('Debes seleccionar al menos un rol.', 'danger');
+                return;
+            }
+            
+            const submitBtn = editarUsuarioForm.querySelector('button[type="submit"]');
+            const originalBtnHtml = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Guardando...';
+            const payload = {};
+            formData.forEach((value, key) => {
+                if (key === 'roles') {
+                    if (!payload['role_names']) payload['role_names'] = [];
+                    payload['role_names'].push(value);
+                } else {
+                    payload[key] = value;
+                }
+            });
+            
+            // Debug: mostrar en consola qué se está enviando
+            console.log('Payload a enviar:', payload);
+            console.log('Roles seleccionados:', payload['role_names']);
+            console.log('FormData entries:');
+            for (let [key, value] of formData.entries()) {
+                console.log(`${key}: ${value}`);
+            }
+            
+            try {
+                const response = await fetch(editarUsuarioForm.action, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    const modal = bootstrap.Modal.getInstance(editarUsuarioModal);
+                    modal.hide();
+                    showAlert('Usuario actualizado exitosamente.', 'success');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
+                } else {
+                    if (result.errors) {
+                        Object.keys(result.errors).forEach(field => {
+                            const fieldElement = document.getElementById(`edit_usuario_${field}`);
+                            const errorElement = document.getElementById(`edit_usuario_${field}-error`);
+                            if (fieldElement && errorElement) {
+                                fieldElement.classList.add('is-invalid');
+                                errorElement.textContent = result.errors[field][0];
+                            }
+                        });
+                    }
+                    showAlert(result.message || 'Error al actualizar usuario.', 'danger');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Error de conexión.', 'danger');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnHtml;
+            }
+        });
+    }
+});
+</script>
+{% endblock %} 
