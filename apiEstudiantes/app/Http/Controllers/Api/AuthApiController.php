@@ -337,6 +337,10 @@ class AuthApiController extends Controller
         Log::info('Acceso a ruta protegida /user.');
         $user = $request->user(); // Esto obtendrá el usuario autenticado a través del token Sanctum
         Log::info('Usuario autenticado obtenido.', ['user_id' => $user->id, 'email' => $user->email]);
+        
+        // Cargar los roles del usuario para que estén disponibles en el frontend
+        $user->load('roles');
+        
         return response()->json($user);
     }
 

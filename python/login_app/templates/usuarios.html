@@ -266,6 +266,8 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             clearModalErrors('editarUsuarioModal');
             
+            const formData = new FormData(editarUsuarioForm);
+            
             // Validar que al menos un rol esté seleccionado
             const rolesSeleccionados = formData.getAll('roles');
             if (rolesSeleccionados.length === 0) {
@@ -277,8 +279,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const originalBtnHtml = submitBtn.innerHTML;
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Guardando...';
-            
-            const formData = new FormData(editarUsuarioForm);
             const payload = {};
             formData.forEach((value, key) => {
                 if (key === 'roles') {

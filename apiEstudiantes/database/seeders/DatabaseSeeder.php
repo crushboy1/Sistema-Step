@@ -19,8 +19,6 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             PermissionSeeder::class,
             PermissionRoleSeeder::class, // Asigna permisos a roles
-            // Si tienes un RoleUserSeeder para asignar roles a usuarios existentes, llámalo aquí
-            //RoleUserSeeder::class,
         ]);
 
         // 2. Crea un usuario de prueba o administrador con todos los campos necesarios
@@ -48,7 +46,7 @@ class DatabaseSeeder extends Seeder
             'two_factor_recovery_codes' => null,
         ]);
 
-        // 2. Ahora llama al seeder que asigna roles a usuarios
+        // 3. Ahora llama al seeder que asigna roles a usuarios
         $this->call([
             RoleUserSeeder::class,
         ]);

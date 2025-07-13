@@ -37,7 +37,7 @@
     </div>
 
     <div class="d-flex justify-content-between align-items-center mb-4">
-        {% if current_user and (has_role(current_user, 'tutor') or has_role(current_user, 'admin')) %}
+        {% if current_user and (has_role(current_user, 'tutor') or has_role(current_user, 'administrador')) %}
             <button type="button" class="btn btn-publicar" data-bs-toggle="modal" data-bs-target="#nuevoCursoModal">
                 <i class="fa fa-plus"></i> Publicar Nuevo Curso
             </button>
@@ -79,7 +79,7 @@
                             <i class="fa fa-eye"></i> Ver
                         </button>
 
-                        {% if current_user and (has_role(current_user, 'tutor') or has_role(current_user, 'admin')) and current_user.id == curso.user_id %}
+                        {% if current_user and (has_role(current_user, 'tutor') or has_role(current_user, 'administrador')) and current_user.id == curso.user_id %}
                             <button type="button"
                                     class="btn btn-outline-warning btn-sm btn-editar-modal"
                                     data-bs-toggle="modal"

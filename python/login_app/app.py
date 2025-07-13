@@ -23,8 +23,11 @@ RECAPTCHA_SECRET_KEY = '6Ld6ey0rAAAAANZkkDMFnTkcLRfA5R2skbv5LXBQ'
 # --- Helper para verificar roles en Jinja2 ---
 def has_role_helper(user_data, role_name):
     """Verifica si un usuario tiene un rol específico."""
-    if user_data and 'roles' in user_data:
-        return any(role['name'] == role_name for role in user_data['roles'])
+    if not user_data or not isinstance(user_data, dict):
+        return False
+    if 'roles' not in user_data or not user_data['roles']:
+        return False
+    return any(role.get('name') == role_name for role in user_data['roles']) 
     return False
 # Añadir la función al contexto de Jinja2 para que esté disponible en todas las plantillas
 app.jinja_env.globals.update(has_role=has_role_helper)
@@ -722,7 +725,7 @@ def nuevo_curso():
     headers = {"Authorization": f"Bearer {token}", "Accept": "application/json"} # Content-Type se añade en la llamada a requests.post
 
     current_user_data = session['user']
-    if not has_role_helper(current_user_data, 'tutor') and not has_role_helper(current_user_data, 'admin'):
+    if not has_role_helper(current_user_data, 'tutor') and not has_role_helper(current_user_data, 'administrador'):
         if request.is_json:
             return jsonify({"success": False, "message": "No tienes permiso para crear cursos."}), 403
         flash("No tienes permiso para crear cursos.", "danger")
@@ -861,7 +864,7 @@ def editar_curso(id):
         
         # Verificar permisos
         if not (
-            has_role_helper(current_user, 'admin') or
+            has_role_helper(current_user, 'administrador') or
             (has_role_helper(current_user, 'tutor') and current_user.get("id") == curso_data.get("user_id"))
         ):
             print(f"DEBUG: Acceso denegado. Usuario ID {current_user.get('id')} no es propietario ni admin.")
@@ -1169,7 +1172,7 @@ def eliminar_curso(id):
         curso_data = curso_response.json()
         
         # Verificar si el usuario es admin o el tutor propietario del curso
-        user_has_admin_role = has_role_helper(current_user_data, 'admin')
+        user_has_admin_role = has_role_helper(current_user_data, 'administrador')
         user_is_tutor_and_owner = (
             has_role_helper(current_user_data, 'tutor') and
             current_user_data.get('id') == curso_data.get('user_id')
@@ -1370,7 +1373,7 @@ def usuarios():
     # Consumir API de Laravel para obtener usuarios
     headers = {"Authorization": f"Bearer {session['token']}", "Accept": "application/json"}
     try:
-        response = requests.get(f"{API_URL_BASE}/admin/users", headers=headers)
+        response = requests.get(f"{API_URL_BASE}/users", headers=headers)
         if response.status_code == 200:
             usuarios = response.json()
             return render_template("usuarios.html", usuarios=usuarios)
@@ -1406,7 +1409,7 @@ def nuevo_usuario():
         }
         
         try:
-            response = requests.post(f"{API_URL_BASE}/admin/users", headers=headers, json=data)
+            response = requests.post(f"{API_URL_BASE}/users", headers=headers, json=data)
             if response.status_code == 201:
                 flash("Usuario creado exitosamente.", "success")
                 return redirect(url_for("usuarios"))
@@ -1434,7 +1437,7 @@ def ver_usuario(id):
     
     headers = {"Authorization": f"Bearer {session['token']}", "Accept": "application/json"}
     try:
-        response = requests.get(f"{API_URL_BASE}/admin/users/{id}", headers=headers)
+        response = requests.get(f"{API_URL_BASE}/users/{id}", headers=headers)
         if response.status_code == 200:
             usuario = response.json()
             return render_template("ver_usuario.html", usuario=usuario)
@@ -1484,7 +1487,7 @@ def editar_usuario(id):
                 data["password"] = password
         
         try:
-            response = requests.put(f"{API_URL_BASE}/admin/users/{id}", headers=headers, json=data)
+            response = requests.put(f"{API_URL_BASE}/users/{id}", headers=headers, json=data)
             if response.status_code == 200:
                 if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                     return jsonify({"success": True, "message": "Usuario actualizado exitosamente."})
@@ -1496,7 +1499,7 @@ def editar_usuario(id):
                     return jsonify({"success": False, "message": error_data.get('message', 'Error desconocido'), "errors": error_data.get('errors', {})}), response.status_code
                 flash(f"Error al actualizar usuario: {error_data.get('message', 'Error desconocido')}", "danger")
                 # Obtener datos actuales del usuario para mostrar en el formulario
-                user_response = requests.get(f"{API_URL_BASE}/admin/users/{id}", headers=headers)
+                user_response = requests.get(f"{API_URL_BASE}/users/{id}", headers=headers)
                 if user_response.status_code == 200:
                     usuario = user_response.json()
                     return render_template("editar_usuario.html", usuario=usuario, error=error_data)
@@ -1507,7 +1510,7 @@ def editar_usuario(id):
     
     # GET: obtener datos del usuario y mostrar formulario
     try:
-        response = requests.get(f"{API_URL_BASE}/admin/users/{id}", headers=headers)
+        response = requests.get(f"{API_URL_BASE}/users/{id}", headers=headers)
         if response.status_code == 200:
             usuario = response.json()
             return render_template("editar_usuario.html", usuario=usuario)

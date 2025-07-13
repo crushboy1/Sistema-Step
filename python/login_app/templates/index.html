@@ -13,11 +13,9 @@
         <h1>Bienvenido al Sitio de Tutoria entre Pares (STEP)</h1>
         <p>Este sitio te ayudará a encontrar la tutoria que necesitas.</p>
         
-        <!-- Botón de Login -->
-        <button id="login-btn" onclick="window.location.href='{{ url_for('login') }}'">Login</button>
-
-        <!-- Botón de Registro -->
-        <button id="register-btn" onclick="window.location.href='{{ url_for('register') }}'">Registro</button>
-    </div>
+        <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
+        <div class="text-center mt-3">
+          <a href="{{ url_for('register') }}">¿No tienes cuenta? Regístrate aquí</a>
+        </div> 
 </body>
 </html>

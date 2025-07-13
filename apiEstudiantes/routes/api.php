@@ -36,9 +36,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
         
         Route::apiResource('cursos', CursoApiController::class); 
-        Route::prefix('admin')->group(function () {
+        
+        // Rutas de gestión de usuarios (solo para administradores)
         Route::apiResource('users', UserController::class);
-    });
         
        // Route::post('/soap', [EstudianteSoapController::class, 'index']); 
        // Route::post('soap_cursos', [CursoSoapController::class, 'index']); 
