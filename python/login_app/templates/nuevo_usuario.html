@@ -16,13 +16,13 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="name" class="form-label">Nombre <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="name" name="name" value="{{ data.name if data else '' }}" required>
+                                    <input type="text" class="form-control" id="name" name="name" value="{{ data.name if data else '' }}" required autocomplete="given-name">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="last_name" class="form-label">Apellido <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="last_name" name="last_name" value="{{ data.last_name if data else '' }}" required>
+                                    <input type="text" class="form-control" id="last_name" name="last_name" value="{{ data.last_name if data else '' }}" required autocomplete="family-name">
                                 </div>
                             </div>
                         </div>
@@ -31,21 +31,25 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                                    <input type="email" class="form-control" id="email" name="email" value="{{ data.email if data else '' }}" required>
+                                    <input type="email" class="form-control" id="email" name="email" value="{{ data.email if data else '' }}" required autocomplete="email">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="number" class="form-label">Número de Teléfono <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="number" name="number" value="{{ data.number if data else '' }}" required>
+                                    <input type="text" class="form-control" id="number" name="number" value="{{ data.number if data else '' }}" required autocomplete="tel">
                                 </div>
                             </div>
                         </div>
                         
                         <div class="mb-3">
                             <label for="password" class="form-label">Contraseña <span class="text-danger">*</span></label>
-                            <input type="password" class="form-control" id="password" name="password" required>
-                            <div class="form-text">Mínimo 6 caracteres</div>
+                            <input type="password" class="form-control" id="password" name="password" required minlength="8" autocomplete="new-password">
+                            <!-- INSTRUCCIÓN PARA ADMIN: -->
+                            <div class="form-text">
+                                La contraseña debe tener al menos 8 caracteres, incluir mayúscula, minúscula, número y símbolo.<br>
+                                <strong>Ejemplo seguro:</strong> <code>Prueba2024!</code>
+                            </div>
                         </div>
                         
                         <div class="mb-3">

@@ -35,29 +35,16 @@ class CursoApiController extends Controller
 
         if ($user->hasRole('tutor')) {
             // Tutor: Mostrar solo los cursos que este tutor imparte
-            // Cargar la relación 'tutor' y asegurar que incluya el 'number'
             $cursos = $user->cursosEnseñados()->with(['tutor' => function($query) {
-                $query->select('id', 'name', 'last_name', 'email', 'number'); // CAMBIADO: Usar 'number'
-            }])->get(); 
-            Log::info('Displaying courses for tutor.', ['user_id' => $user->id, 'course_count' => $cursos->count()]);
-        } elseif ($user->hasRole('estudiante')) {
-            // Estudiante: Mostrar todos los cursos disponibles y permitir filtrar por nombre
-            $query = Curso::query();
-
-            // Filtrar por nombre si se proporciona en la solicitud (ej. /api/v1/cursos?nombre=Matematicas)
-            if ($request->has('nombre')) {
-                $query->where('nombre', 'like', '%' . $request->nombre . '%');
-                Log::info('Filtering courses by name for student.', ['name_filter' => $request->nombre]);
-            }
-
-            // Cargar la información del tutor para cada curso, incluyendo el número de contacto
-            $cursos = $query->with(['tutor' => function($query) {
-                $query->select('id', 'name', 'last_name', 'email', 'number'); // CAMBIADO: Usar 'number'
+                $query->select('id', 'name', 'last_name', 'email', 'number');
             }])->get();
-            Log::info('Displaying all available courses for student (with filter if any).', ['user_id' => $user->id, 'course_count' => $cursos->count()]);
+        } elseif ($user->hasRole('administrador')) {
+            // Administrador: Mostrar todos los cursos
+            $cursos = Curso::with(['tutor' => function($query) {
+                $query->select('id', 'name', 'last_name', 'email', 'number');
+            }])->get();
         } else {
-            // Cualquier otro rol o usuario sin un rol específico para cursos
-            Log::warning('User without specific role trying to access courses index.', ['user_id' => $user->id, 'roles' => $user->roles->pluck('name')->toArray()]);
+            // Otros roles: lógica actual (puedes personalizar)
             $cursos = collect(); // Retorna una colección vacía
         }
 
@@ -74,10 +61,12 @@ class CursoApiController extends Controller
     {
         $user = Auth::user();
 
-        // Solo los tutores pueden crear cursos
-        if (!$user || !$user->hasRole('tutor')) {
-            Log::warning('Non-tutor user or unauthenticated user attempted to store a course.', ['user_id' => $user ? $user->id : 'guest']);
-            return response()->json(['message' => 'Acceso denegado. Solo los tutores pueden crear cursos.'], 403);
+        // Permitir que tanto tutores como administradores creen cursos
+        // Esto da flexibilidad operativa y permite al admin ayudar o gestionar la oferta académica.
+        // El campo user_id del curso reflejará quién lo creó (tutor o admin), lo que mantiene la trazabilidad.
+        if (!$user || (!$user->hasRole('tutor') && !$user->hasRole('administrador'))) {
+            Log::warning('Non-tutor/non-admin user or unauthenticated user attempted to store a course.', ['user_id' => $user ? $user->id : 'guest']);
+            return response()->json(['message' => 'Acceso denegado. Solo tutores o administradores pueden crear cursos.'], 403);
         }
 
         Log::info('Attempting to store a new course by tutor.', ['tutor_id' => $user->id]);
@@ -149,13 +138,11 @@ class CursoApiController extends Controller
     {
         $user = Auth::user();
 
-        // Solo los tutores pueden actualizar cursos
-        if (!$user || !$user->hasRole('tutor')) {
-            Log::warning('Non-tutor user or unauthenticated user attempted to update a course.', ['user_id' => $user ? $user->id : 'guest']);
-            return response()->json(['message' => 'Acceso denegado. Solo los tutores pueden actualizar cursos.'], 403);
+        // Permitir que tutores propietarios o administradores actualicen cursos
+        if (!$user || (!$user->hasRole('tutor') && !$user->hasRole('administrador'))) {
+            Log::warning('Non-tutor/non-admin user or unauthenticated user attempted to update a course.', ['user_id' => $user ? $user->id : 'guest']);
+            return response()->json(['message' => 'Acceso denegado. Solo tutores propietarios o administradores pueden actualizar cursos.'], 403);
         }
-
-        Log::info('Attempting to update course with ID: ' . $id . ' by tutor: ' . $user->id);
 
         $curso = Curso::find($id);
 
@@ -164,8 +151,8 @@ class CursoApiController extends Controller
             return response()->json(['message' => 'Curso no encontrado'], 404);
         }
 
-        // Asegurarse de que el tutor solo puede actualizar sus propios cursos
-        if ($curso->user_id !== $user->id) {
+        // Si es tutor, solo puede actualizar sus propios cursos. El admin puede actualizar cualquiera.
+        if ($user->hasRole('tutor') && !$user->hasRole('administrador') && $curso->user_id !== $user->id) {
             Log::warning('Tutor attempted to update a course they do not own.', ['tutor_id' => $user->id, 'course_id' => $id, 'owner_id' => $curso->user_id]);
             return response()->json(['message' => 'No tienes permiso para actualizar este curso.'], 403);
         }
@@ -184,7 +171,7 @@ class CursoApiController extends Controller
             Log::info('Validated data for course update.', $validatedData);
 
             $curso->update($validatedData);
-            Log::info('Course updated successfully by tutor.', ['course_id' => $curso->id, 'tutor_id' => $user->id]);
+            Log::info('Course updated successfully.', ['course_id' => $curso->id, 'updated_by' => $user->id]);
 
             // Cargar la relación del tutor con el número de contacto para la respuesta
             $curso->load(['tutor' => function($query) {
@@ -212,13 +199,11 @@ class CursoApiController extends Controller
     {
         $user = Auth::user();
 
-        // Solo los tutores pueden eliminar cursos
-        if (!$user || !$user->hasRole('tutor')) {
-            Log::warning('Non-tutor user or unauthenticated user attempted to delete a course.', ['user_id' => $user ? $user->id : 'guest']);
-            return response()->json(['message' => 'Acceso denegado. Solo los tutores pueden eliminar cursos.'], 403);
+        // Permitir que tutores propietarios o administradores eliminen cursos
+        if (!$user || (!$user->hasRole('tutor') && !$user->hasRole('administrador'))) {
+            Log::warning('Non-tutor/non-admin user or unauthenticated user attempted to delete a course.', ['user_id' => $user ? $user->id : 'guest']);
+            return response()->json(['message' => 'Acceso denegado. Solo tutores propietarios o administradores pueden eliminar cursos.'], 403);
         }
-
-        Log::info('Attempting to delete course with ID: ' . $id . ' by tutor: ' . $user->id);
 
         $curso = Curso::find($id);
 
@@ -227,15 +212,15 @@ class CursoApiController extends Controller
             return response()->json(['message' => 'Curso no encontrado'], 404);
         }
 
-        // Asegurarse de que el tutor solo puede eliminar sus propios cursos
-        if ($curso->user_id !== $user->id) {
+        // Si es tutor, solo puede eliminar sus propios cursos. El admin puede eliminar cualquiera.
+        if ($user->hasRole('tutor') && !$user->hasRole('administrador') && $curso->user_id !== $user->id) {
             Log::warning('Tutor attempted to delete a course they do not own.', ['tutor_id' => $user->id, 'course_id' => $id, 'owner_id' => $curso->user_id]);
             return response()->json(['message' => 'No tienes permiso para eliminar este curso.'], 403);
         }
 
         try {
             $curso->delete();
-            Log::info('Course deleted successfully by tutor.', ['course_id' => $curso->id, 'tutor_id' => $user->id]);
+            Log::info('Course deleted successfully.', ['course_id' => $curso->id, 'deleted_by' => $user->id]);
             return response()->json(['message' => 'Curso eliminado exitosamente']);
         } catch (\Exception $e) {
             Log::error('Error deleting course: ' . $e->getMessage(), ['exception' => $e]);
