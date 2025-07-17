@@ -1,125 +1,291 @@
-/* Reset básico de estilos */
+/* Importa las fuentes de Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Montserrat:wght@600;800;900&display=swap');
+
+/* Definición de variables CSS para colores y valores comunes */
+:root {
+    --primary-gradient-start: #4A00E0; /* Morado oscuro */
+    --primary-gradient-end: #8E2DE2;   /* Morado claro */
+    --secondary-color: #00D4FF;        /* Azul cielo brillante para resaltar */
+    --accent-color: #FF6B6B;           /* Rojo coral para acentos */
+    --text-light: #ECF0F1;             /* Texto claro */
+    --text-dark-translucent: rgba(0, 0, 0, 0.6); /* Texto oscuro semitransparente */
+    --button-bg-start: #00C6FF;        /* Azul para botón */
+    --button-bg-end: #0072FF;          /* Azul más oscuro para botón */
+}
+
+/* Reset básico de estilos para todos los elementos */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-body,
-html {
-    width: 100%;
-    height: 100%;
-}
-
-/* Fondo con imagen */
+/* Estilos del cuerpo de la página */
 body {
-    background-image: url('/static/img/1.jpeg');
-    background-size: cover;
-    background-position: center center;
-    font-family: 'Arial', sans-serif;
-    color: #fff;
+    font-family: 'Roboto', sans-serif; /* Fuente principal para el cuerpo */
     display: flex;
     justify-content: center;
     align-items: center;
+    min-height: 100vh; /* Altura mínima del viewport */
+    background: linear-gradient(135deg, var(--primary-gradient-start), var(--primary-gradient-end)); /* Gradiente de fondo */
+    color: var(--text-light); /* Color de texto por defecto */
+    overflow: hidden; /* Oculta el desbordamiento para las animaciones de fondo */
+    position: relative;
+}
+
+/* Sección principal que ocupa toda la pantalla */
+.hero-section {
+    width: 100%;
     height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
     overflow: hidden;
-    text-align: center;
-    flex-direction: column;
+    padding: 20px; /* Espaciado interno para evitar que el contenido toque los bordes */
 }
 
-/* Estilo para el título */
-h1 {
-    color: #ffffff;
-    font-size: 48px;
-    font-weight: 700;
-    margin-bottom: 20px;
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-}
-
-/* Estilo general de los botones */
-button {
-    padding: 16px 32px;
-    font-size: 18px;
-    font-weight: bold;                                                                          
-    border: 2px solid transparent;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    width: 250px;
-    margin-top: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    background-color: transparent;
-    color: #fff;
-}
-
-/* Botón de "Iniciar sesión" */
-#login-btn {
-    background-color: #4285f4;
-    border-color: #4285f4;
-    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-#login-btn:hover {
-    background-color: #357ae8;
-    transform: translateY(-4px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-}
-
-#login-btn:active {
-    background-color: #3367d6;
-    transform: translateY(0);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-/* Botón de "Registrar" */
-#register-btn {
-    background-color: #34a853;
-    border-color: #34a853;
-    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-#register-btn:hover {
-    background-color: #2c8f44;
-    transform: translateY(-4px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-}
-
-#register-btn:active {
-    background-color: #2b7d3f;
-    transform: translateY(0);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-/* Estilo para la pantalla de carga */
-.loading-screen {
-    position: fixed;
+/* Contenedor para la animación de fondo (círculos/burbujas) */
+.background-animation {
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: none; /* Inicialmente oculta */
-    justify-content: center;
+    overflow: hidden;
+    z-index: 0; /* Asegura que la animación esté detrás del contenido */
+}
+
+/* Estilo para cada elemento de la animación de fondo */
+.background-animation span {
+    position: absolute;
+    display: block;
+    list-style: none;
+    background: rgba(255, 255, 255, 0.1); /* Color blanco semitransparente */
+    animation: animate-bubbles 20s linear infinite; /* Animación de burbujas */
+    bottom: -180px; /* Empieza fuera de la vista */
+    border-radius: 50%; /* Forma circular */
+}
+
+/* Posiciones y tamaños aleatorios para las burbujas */
+.background-animation span:nth-child(1) { left: 25%; width: 90px; height: 90px; animation-delay: 0s; animation-duration: 25s; }
+.background-animation span:nth-child(2) { left: 10%; width: 30px; height: 30px; animation-delay: 2s; animation-duration: 15s; }
+.background-animation span:nth-child(3) { left: 70%; width: 40px; height: 40px; animation-delay: 4s; animation-duration: 20s; }
+.background-animation span:nth-child(4) { left: 40%; width: 120px; height: 120px; animation-delay: 0s; animation-duration: 30s; }
+.background-animation span:nth-child(5) { left: 65%; width: 50px; height: 50px; animation-delay: 0s; animation-duration: 10s; }
+.background-animation span:nth-child(6) { left: 80%; width: 70px; height: 70px; animation-delay: 3s; animation-duration: 22s; }
+
+/* Keyframes para la animación de las burbujas */
+@keyframes animate-bubbles {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; border-radius: 50%; }
+    100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; border-radius: 50%; }
+}
+
+/* Contenedor del contenido principal (texto y botón) */
+.content-wrapper {
+    text-align: center;
+    z-index: 1; /* Asegura que el contenido esté sobre la animación de fondo */
+    max-width: 800px;
+    padding: 40px;
+    background: rgba(0, 0, 0, 0.4); /* Fondo semitransparente oscuro */
+    border-radius: 25px; /* Bordes muy redondeados */
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); /* Sombra pronunciada */
+    backdrop-filter: blur(10px); /* Efecto de desenfoque detrás del contenido */
+    border: 1px solid rgba(255, 255, 255, 0.15); /* Borde sutil */
+}
+
+/* Estilos del título principal */
+h1 {
+    font-family: 'Montserrat', sans-serif; /* Fuente para el título */
+    font-size: 4.8em;
+    font-weight: 900; /* Extra bold */
+    margin-bottom: 15px;
+    line-height: 1.1;
+    text-shadow: 4px 4px 8px var(--text-dark-translucent); /* Sombra para el texto */
+    letter-spacing: -2px; /* Espaciado entre letras */
+    color: var(--text-light);
+}
+
+/* Estilo para la parte resaltada del título (STEP) */
+.highlight {
+    color: var(--secondary-color); /* Color brillante */
+    text-shadow: 0 0 20px var(--secondary-color), 0 0 40px var(--secondary-color); /* Efecto de brillo neón */
+    transition: all 0.4s ease-in-out;
+}
+
+.highlight:hover {
+    transform: scale(1.05); /* Pequeño zoom al pasar el ratón */
+    text-shadow: 0 0 25px var(--secondary-color), 0 0 50px var(--secondary-color);
+}
+
+/* Estilos del subtítulo */
+.tagline {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2em;
+    font-weight: 700;
+    margin-bottom: 25px;
+    color: var(--accent-color); /* Color de acento */
+    text-shadow: 2px 2px 5px var(--text-dark-translucent);
+}
+
+/* Estilos de la descripción */
+.description {
+    font-size: 1.3em;
+    line-height: 1.7;
+    margin-bottom: 50px;
+    color: rgba(236, 240, 241, 0.95); /* Texto ligeramente transparente */
+    max-width: 650px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Estilo del botón "Comenzar Ahora" */
+.btn-start {
+    display: inline-flex; /* Para alinear texto y flecha */
     align-items: center;
-    z-index: 9999; /* Asegúrate de que la pantalla de carga esté encima del contenido */
+    background: linear-gradient(45deg, var(--button-bg-start), var(--button-bg-end)); /* Gradiente de fondo */
+    color: white;
+    padding: 20px 45px;
+    border-radius: 50px; /* Botón con forma de píldora */
+    text-decoration: none;
+    font-size: 1.4em;
+    font-weight: 700;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); /* Transición suave */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); /* Sombra para el botón */
+    border: none;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden; /* Para el efecto de brillo */
+    letter-spacing: 1px;
+    text-transform: uppercase; /* Texto en mayúsculas */
 }
 
-/* Animación del spinner (círculo giratorio) */
-.spinner {
-    border: 4px solid rgba(255, 255, 255, 0.3);
-    border-top: 4px solid #ffcc00;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 1s linear infinite;
+.btn-start:hover {
+    transform: translateY(-8px) scale(1.02); /* Levanta y agranda ligeramente al pasar el ratón */
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(45deg, var(--button-bg-end), var(--button-bg-start)); /* Invierte el gradiente */
 }
 
-/* Animación para girar el círculo */
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
+.btn-start .button-text {
+    position: relative;
+    z-index: 2; /* Asegura que el texto esté sobre el brillo */
+}
+
+.btn-start .icon-arrow {
+    margin-left: 20px; /* Espacio entre texto y flecha */
+    transition: transform 0.3s ease-in-out;
+    font-size: 1.2em;
+    position: relative;
+    z-index: 2;
+}
+
+.btn-start:hover .icon-arrow {
+    transform: translateX(8px); /* Mueve la flecha al pasar el ratón */
+}
+
+/* Efecto de brillo en el botón */
+.btn-start::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.3); /* Brillo blanco semitransparente */
+    transform: skewX(-30deg); /* Inclinación del brillo */
+    transition: all 0.7s cubic-bezier(0.25, 0.8, 0.25, 1);
+    z-index: 1;
+}
+
+.btn-start:hover::before {
+    left: 100%; /* Mueve el brillo de izquierda a derecha */
+}
+
+/* Keyframes para la animación de entrada de elementos */
+@keyframes animateFadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
     }
-    100% {
-        transform: rotate(360deg);
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Clases para aplicar animaciones con retraso */
+.animate-fade-in-up {
+    animation: animateFadeInUp 1.2s ease-out forwards;
+    opacity: 0; /* Oculto por defecto */
+}
+
+.animate-fade-in-up.delay-1 { animation-delay: 0.4s; }
+.animate-fade-in-up.delay-2 { animation-delay: 0.8s; }
+.animate-fade-in-up.delay-3 { animation-delay: 1.2s; }
+
+/* Media Queries para Responsividad */
+@media (max-width: 992px) {
+    h1 {
+        font-size: 3.8em;
+    }
+    .tagline {
+        font-size: 1.7em;
+    }
+    .description {
+        font-size: 1.1em;
+    }
+    .btn-start {
+        padding: 18px 40px;
+        font-size: 1.3em;
+    }
+    .content-wrapper {
+        padding: 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 3em;
+        letter-spacing: -1px;
+    }
+    .tagline {
+        font-size: 1.4em;
+    }
+    .description {
+        font-size: 1em;
+        margin-bottom: 40px;
+    }
+    .btn-start {
+        padding: 15px 30px;
+        font-size: 1.1em;
+    }
+    .content-wrapper {
+        padding: 25px;
+        border-radius: 20px;
+    }
+    .background-animation span {
+        animation-duration: 15s; /* Animación más rápida en móviles */
+    }
+}
+
+@media (max-width: 576px) {
+    h1 {
+        font-size: 2.2em;
+        line-height: 1.2;
+    }
+    .tagline {
+        font-size: 1.2em;
+    }
+    .description {
+        font-size: 0.9em;
+        margin-bottom: 30px;
+    }
+    .btn-start {
+        padding: 12px 25px;
+        font-size: 1em;
+    }
+    .content-wrapper {
+        padding: 20px;
+        border-radius: 15px;
     }
 }
