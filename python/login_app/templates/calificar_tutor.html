@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Calificar Tutor{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4>Calificar Tutor</h4>
+                </div>
+                <div class="card-body">
+                    <p class="text-center">Por favor, califica a tu tutor después de la sesión.</p>
+                    <form id="ratingForm" method="POST" action="{{ url_for('calificar_tutor', tutor_id=tutor_id, session_id=session_id) }}">
+                        <div class="mb-3">
+                            <label for="rating" class="form-label">Calificación (1-5)</label>
+                            <select class="form-select" id="rating" name="rating" required>
+                                <option value="">Selecciona una calificación</option>
+                                <option value="1">1 Estrella (Muy Malo)</option>
+                                <option value="2">2 Estrellas (Malo)</option>
+                                <option value="3">3 Estrellas (Regular)</option>
+                                <option value="4">4 Estrellas (Bueno)</option>
+                                <option value="5">5 Estrellas (Excelente)</option>
+                            </select>
+                            <div class="invalid-feedback" id="rating-error"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="comment" class="form-label">Comentario (Opcional)</label>
+                            <textarea class="form-control" id="comment" name="comment" rows="4" placeholder="Comparte tu experiencia..."></textarea>
+                            <div class="invalid-feedback" id="comment-error"></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Enviar Calificación</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Función para mostrar alertas (reutilizada de cursos.html)
+    function showAlert(message, type) {
+        document.querySelectorAll('.custom-alert').forEach(alert => alert.remove());
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show custom-alert`;
+        alertDiv.style.position = 'fixed';
+        alertDiv.style.top = '20px';
+        alertDiv.style.right = '20px';
+        alertDiv.style.zIndex = '9999';
+        alertDiv.style.minWidth = '300px';
+        alertDiv.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.body.appendChild(alertDiv);
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+
+    const ratingForm = document.getElementById('ratingForm');
+    if (ratingForm) {
+        ratingForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Limpiar mensajes de error previos
+            document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            document.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
+
+            let isValid = true;
+
+            const ratingField = document.getElementById('rating');
+            if (!ratingField.value) {
+                ratingField.classList.add('is-invalid');
+                document.getElementById('rating-error').textContent = 'Por favor, selecciona una calificación.';
+                isValid = false;
+            }
+
+            if (!isValid) {
+                return;
+            }
+
+            const submitBtn = ratingForm.querySelector('button[type="submit"]');
+            const originalBtnHtml = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Enviando...';
+
+            const formData = new FormData(ratingForm);
+            const payload = {
+                tutor_id: parseInt("{{ tutor_id }}"), // Asegúrate de que tutor_id sea un entero
+                session_id: parseInt("{{ session_id }}"), // Asegúrate de que session_id sea un entero
+                rating: parseInt(formData.get('rating')),
+                comment: formData.get('comment') || null // Enviar null si el comentario está vacío
+            };
+
+            try {
+                const response = await fetch(ratingForm.action, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const contentType = response.headers.get('content-type');
+                let result;
+                if (contentType && contentType.includes('application/json')) {
+                    result = await response.json();
+                } else {
+                    const text = await response.text();
+                    result = { status: 'error', message: text || `Error del servidor (${response.status})` };
+                }
+
+                if (response.ok && result.status === 'success') {
+                    showAlert(result.message || 'Calificación enviada con éxito.', 'success');
+                    setTimeout(() => {
+                        window.location.href = "{{ url_for('cursos') }}"; // Redirigir a la página de cursos o historial
+                    }, 1500);
+                } else {
+                    if (result.errors) {
+                        Object.keys(result.errors).forEach(field => {
+                            const fieldElement = document.getElementById(field); // Asume que los IDs coinciden con los nombres de campo de Laravel
+                            const errorElement = document.getElementById(`${field}-error`);
+                            if (fieldElement && errorElement) {
+                                fieldElement.classList.add('is-invalid');
+                                errorElement.textContent = result.errors[field][0];
+                            }
+                        });
+                    }
+                    showAlert(result.message || 'Error al enviar la calificación.', 'danger');
+                }
+            } catch (error) {
+                console.error('Error de red o del servidor al enviar calificación:', error);
+                showAlert(`Error: ${error.message || 'Error de red o del servidor'}`, 'danger');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnHtml;
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
