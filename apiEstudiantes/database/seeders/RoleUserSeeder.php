@@ -27,6 +27,7 @@ class RoleUserSeeder extends Seeder
         $estudianteUser1 = User::where('email', 'estudiante1@example.com')->first();
         $estudianteUser2 = User::where('email', 'estudiante2@example.com')->first();
         $luciaUser = User::where('email', 'lucia.martinez@example.com')->first();
+        $JavierCuri = User::where('email', 'JCuri@gmail.com')->first();
 
         if ($adminUser && $adminRole) {
             $adminUser->roles()->syncWithoutDetaching([$adminRole->id]);
@@ -42,6 +43,9 @@ class RoleUserSeeder extends Seeder
         }
         if ($luciaUser && $tutorRole) {
             $luciaUser->roles()->syncWithoutDetaching([$tutorRole->id]); // Lucia como tutor de ejemplo
+        }
+        if ($JavierCuri && $adminRole) {
+            $JavierCuri->roles()->syncWithoutDetaching([$adminRole->id]); // Javier como estudiante de ejemplo
         }
 
         // Puedes añadir más asignaciones según necesites

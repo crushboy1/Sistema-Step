@@ -74,6 +74,15 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
         ]);
+        User::factory()->create([
+            'name' => 'Javier',
+            'last_name' => 'Curi',
+            'number' => '997342222',
+            'email' => 'JCuri@gmail.com',
+            'password' => Hash::make('password'),
+            'email_verified_at' => now(),
+        ]);
+
 
         // 3. Ahora llama al seeder que asigna roles a usuarios
         $this->call([
@@ -88,7 +97,7 @@ class DatabaseSeeder extends Seeder
             'descripcion' => 'Curso introductorio de matemáticas para estudiantes de secundaria.',
             'monto' => 120.00,
             'frecuencia' => 'Semanal',
-            'imagen_url' => 'https://ejemplo.com/matematicas.jpg',
+            'imagen_url' => 'https://www.gaceta.unam.mx/wp-content/uploads/2024/03/240319-aca9-des-f1-matematicas.jpg',
             'user_id' => $tutorUser ? $tutorUser->id : null,
         ]);
         \App\Models\Curso::create([
@@ -96,7 +105,7 @@ class DatabaseSeeder extends Seeder
             'descripcion' => 'Aprende los conceptos fundamentales de la física.',
             'monto' => 150.00,
             'frecuencia' => 'Semanal',
-            'imagen_url' => 'https://ejemplo.com/fisica.jpg',
+            'imagen_url' => 'https://media.s-bol.com/BzqLoMzZogx/543x840.jpg',
             'user_id' => $luciaUser ? $luciaUser->id : null,
         ]);
         \App\Models\Curso::create([
@@ -104,7 +113,7 @@ class DatabaseSeeder extends Seeder
             'descripcion' => 'Mejora tu inglés hablado con clases prácticas.',
             'monto' => 100.00,
             'frecuencia' => 'Diario',
-            'imagen_url' => 'https://ejemplo.com/ingles.jpg',
+            'imagen_url' => 'https://th.bing.com/th/id/OIP.3FT4pVa25l24oZAG46lIlwHaFj?w=284&h=213&c=7&r=0&o=7&pid=1.7&rm=3',
             'user_id' => $tutorUser ? $tutorUser->id : null,
         ]);
         \App\Models\Curso::create([
@@ -112,7 +121,7 @@ class DatabaseSeeder extends Seeder
             'descripcion' => 'Curso básico de programación usando Python.',
             'monto' => 200.00,
             'frecuencia' => 'Semanal',
-            'imagen_url' => 'https://ejemplo.com/python.jpg',
+            'imagen_url' => 'https://cdn.computerhoy.com/sites/navi.axelspringer.es/public/media/image/2023/04/raspberry-lanza-editor-codigo-aprender-python-lenguaje-ia-3008158.jpg',
             'user_id' => $luciaUser ? $luciaUser->id : null,
         ]);
         \App\Models\Curso::create([
@@ -120,10 +129,10 @@ class DatabaseSeeder extends Seeder
             'descripcion' => 'Explora los eventos más importantes de la historia mundial.',
             'monto' => 90.00,
             'frecuencia' => 'Mensual',
-            'imagen_url' => 'https://ejemplo.com/historia.jpg',
+            'imagen_url' => 'https://comofuncionaque.com/wp-content/uploads/2015/06/Las-batallas-desplegadas-en-alta-mar-forman-parte-de-la-historia-marina-de-nuestros-antepasados-1024x617.jpg',
             'user_id' => $tutorUser ? $tutorUser->id : null,
         ]);
-
+        
         // Opcional: Crear más usuarios de prueba usando el factory si lo necesitas
         // User::factory(10)->create();
     }
