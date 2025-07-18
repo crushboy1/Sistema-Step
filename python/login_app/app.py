@@ -1303,6 +1303,7 @@ def nuevo_usuario():
     if request.method == "POST":
         headers = {"Authorization": f"Bearer {session['token']}", "Accept": "application/json", "Content-Type": "application/json"}
         
+
         data_to_send = {}
         # Determine if the request is JSON (from AJAX) or form-data (traditional)
         if request.is_json:
