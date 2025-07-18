@@ -32,8 +32,8 @@ class AcademicSessionApiController extends Controller
             $query->whereNotNull('end_time');
         }
 
-        // Incluir la relación con rating
-        $sessions = $query->with(['rating'])->orderByDesc('start_time')->get();
+        // Incluir las relaciones con rating, tutor, student y course
+        $sessions = $query->with(['rating', 'tutor', 'student', 'course'])->orderByDesc('start_time')->get();
 
         return response()->json([
             'status' => 'success',

@@ -56,6 +56,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('users', UserController::class);
         // Ruta para listar tutores
         Route::get('tutores', [UserController::class, 'tutores']);
+        // Ruta para obtener los cursos de un tutor específico
+        Route::get('tutores/{id}/cursos', [UserController::class, 'cursosPorTutor']);
 
         // Rutas para Calificaciones (Ratings)
         // Estas rutas permitirán a los estudiantes calificar a los tutores.

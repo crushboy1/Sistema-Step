@@ -44,4 +44,46 @@
         <button type="submit" class="btn btn-primary w-100">Agendar Sesión</button>
     </form>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tutorSelect = document.getElementById('tutor_id');
+    const courseSelect = document.getElementById('course_id');
+    const originalOptions = Array.from(courseSelect.options);
+
+    tutorSelect.addEventListener('change', function() {
+        const tutorId = this.value;
+        // Limpiar cursos
+        courseSelect.innerHTML = '<option value="">Cargando cursos...</option>';
+        if (!tutorId) {
+            // Restaurar todos los cursos si no hay tutor seleccionado
+            courseSelect.innerHTML = '';
+            originalOptions.forEach(opt => courseSelect.appendChild(opt.cloneNode(true)));
+            return;
+        }
+        fetch(`/api/v1/tutores/${tutorId}/cursos`, {
+            headers: { 'Accept': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            courseSelect.innerHTML = '<option value="">Selecciona un curso</option>';
+            if (Array.isArray(data)) {
+                data.forEach(curso => {
+                    const opt = document.createElement('option');
+                    opt.value = curso.id;
+                    opt.textContent = curso.nombre;
+                    courseSelect.appendChild(opt);
+                });
+            } else if (data && data.length === 0) {
+                courseSelect.innerHTML = '<option value="">No hay cursos para este tutor</option>';
+            }
+        })
+        .catch(() => {
+            courseSelect.innerHTML = '<option value="">Error al cargar cursos</option>';
+        });
+    });
+});
+</script>
 {% endblock %} 

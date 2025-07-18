@@ -266,4 +266,19 @@ class UserController extends Controller
         })->get();
         return response()->json($tutores);
     }
+
+    /**
+     * Devuelve los cursos que imparte un tutor específico.
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function cursosPorTutor($id)
+    {
+        $tutor = \App\Models\User::find($id);
+        if (!$tutor || !$tutor->hasRole('tutor')) {
+            return response()->json(['message' => 'Tutor no encontrado'], 404);
+        }
+        $cursos = $tutor->cursosEnseñados()->get();
+        return response()->json($cursos);
+    }
 }
