@@ -34,6 +34,14 @@
                                 <a class="nav-link" href="{{ url_for('mis_sesiones') }}">Mis Sesiones</a>
                             </li>
                         {% endif %}
+                        {% if 'administrador' in roles %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('usuarios') }}">Gestión de Usuarios</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('nuevo_usuario') }}">Nuevo Usuario</a>
+                            </li>
+                        {% endif %}
                     {% endif %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('profile') }}">Perfil</a>
