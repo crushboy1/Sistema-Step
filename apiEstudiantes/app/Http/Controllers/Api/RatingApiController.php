@@ -95,7 +95,13 @@ class RatingApiController extends Controller
                 'data' => $rating
             ], 201); // Código de estado 201 para recurso creado
         } catch (\Exception $e) {
-            // Manejo de errores inesperados
+            \Log::error('Error al guardar la calificación: ' . $e->getMessage(), [
+                'exception' => $e,
+                'student_id' => Auth::id(),
+                'tutor_id' => $request->tutor_id,
+                'session_id' => $request->session_id,
+                'input' => $request->all()
+            ]);
             return response()->json([
                 'status' => 'error',
                 'message' => 'Ocurrió un error al guardar la calificación.',

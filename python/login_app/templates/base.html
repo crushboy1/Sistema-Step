@@ -9,42 +9,47 @@
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container">
+        <div class="container-fluid">
             <a class="navbar-brand" href="{{ url_for('home') }}">Inicio</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    {# Verifica si el usuario está logeado usando 'user' en la sesión #}
-                    {% if 'user' in session and session['user'] %}
-                        {# Enlaces visibles para todos los usuarios logeados #}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('cursos') }}">Cursos</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('profile') }}">Perfil</a></li>
-
-
-                        {# Enlaces condicionales basados en roles #}
-                        {% if has_role(session['user'], 'administrador') %}
-                            <li class="nav-item"><a class="nav-link" href="http://127.0.0.1:8080/dashboard">Dashboard</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('estudiantes') }}">Estudiantes</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('nuevo_estudiante') }}">Nuevo Estudiante</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('usuarios') }}">Gestión de Usuarios</a></li>
-
-
-                            {# El enlace a "Nuevo Curso" aquí debería ser un botón para abrir el modal, no una ruta directa #}
-                            {# <li class="nav-item"><a class="nav-link" href="{{ url_for('nuevo_curso') }}">Nuevo Curso</a></li> #}
-                        {% elif has_role(session['user'], 'tutor') %}
-                            {# El enlace a "Nuevo Curso" aquí debería ser un botón para abrir el modal, no una ruta directa #}
-                            {# <li class="nav-item"><a class="nav-link" href="{{ url_for('nuevo_curso') }}">Nuevo Curso</a></li> #}
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('cursos') }}">Cursos</a>
+                    </li>
+                    {% if session['user'] and session['user']['roles'] %}
+                        {% set roles = session['user']['roles']|map(attribute='name')|list %}
+                        {% if 'tutor' in roles %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('mis_sesiones_tutor') }}">Sesiones como Tutor</a>
+                            </li>
                         {% endif %}
-
-                        {# Enlace de Cerrar Sesión #}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Cerrar Sesión</a></li>
-                    {% else %}
-                        {# Enlaces para usuarios no logeados #}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Iniciar Sesión</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">Registrarse</a></li>
+                        {% if 'estudiante' in roles %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('agendar_sesion') }}">Agendar Sesión</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('mis_sesiones') }}">Mis Sesiones</a>
+                            </li>
+                        {% endif %}
+                        {% if 'administrador' in roles %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('usuarios') }}">Gestión de Usuarios</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('nuevo_usuario') }}">Nuevo Usuario</a>
+                            </li>
+                        {% endif %}
                     {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('profile') }}">Perfil</a>
+                    </li>
+                    <!-- NOTA: El perfil puede lanzar error si el usuario no tiene todos los campos esperados. Para futuras mejoras, validar los datos antes de renderizar. -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">Cerrar Sesión</a>
+                    </li>
                 </ul>
             </div>
         </div>

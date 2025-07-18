@@ -254,4 +254,31 @@ class UserController extends Controller
             return response()->json(['message' => 'Error al eliminar el usuario'], 500);
         }
     }
+
+    /**
+     * Devuelve la lista de usuarios con rol 'tutor'.
+     * Solo para usuarios autenticados.
+     */
+    public function tutores()
+    {
+        $tutores = \App\Models\User::whereHas('roles', function($q) {
+            $q->where('name', 'tutor');
+        })->get();
+        return response()->json($tutores);
+    }
+
+    /**
+     * Devuelve los cursos que imparte un tutor específico.
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function cursosPorTutor($id)
+    {
+        $tutor = \App\Models\User::find($id);
+        if (!$tutor || !$tutor->hasRole('tutor')) {
+            return response()->json(['message' => 'Tutor no encontrado'], 404);
+        }
+        $cursos = $tutor->cursosEnseñados()->get();
+        return response()->json($cursos);
+    }
 }

@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Agendar Sesión Académica{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Agendar Sesión Académica</h2>
+    <form method="POST" action="{{ url_for('agendar_sesion') }}">
+        <div class="mb-3">
+            <label for="tutor_id" class="form-label">Tutor</label>
+            <select class="form-select" id="tutor_id" name="tutor_id" required>
+                <option value="">Selecciona un tutor</option>
+                {% for tutor in tutores %}
+                    <option value="{{ tutor.id }}" {% if form.tutor_id == tutor.id|string %}selected{% endif %}>{{ tutor.name }} {{ tutor.last_name }}</option>
+                {% endfor %}
+            </select>
+            {% if errors.tutor_id %}<div class="text-danger small">{{ errors.tutor_id[0] }}</div>{% endif %}
+        </div>
+        <div class="mb-3">
+            <label for="course_id" class="form-label">Curso</label>
+            <select class="form-select" id="course_id" name="course_id" required>
+                <option value="">Selecciona un curso</option>
+                {% for curso in cursos %}
+                    <option value="{{ curso.id }}" {% if form.course_id == curso.id|string %}selected{% endif %}>{{ curso.nombre }}</option>
+                {% endfor %}
+            </select>
+            {% if errors.course_id %}<div class="text-danger small">{{ errors.course_id[0] }}</div>{% endif %}
+        </div>
+        <div class="mb-3">
+            <label for="start_time" class="form-label">Fecha y Hora de Inicio</label>
+            <input type="datetime-local" class="form-control" id="start_time" name="start_time" value="{{ form.start_time|default('') }}" required>
+            {% if errors.start_time %}<div class="text-danger small">{{ errors.start_time[0] }}</div>{% endif %}
+        </div>
+        <div class="mb-3">
+            <label for="end_time" class="form-label">Fecha y Hora de Fin (opcional)</label>
+            <input type="datetime-local" class="form-control" id="end_time" name="end_time" value="{{ form.end_time|default('') }}">
+            {% if errors.end_time %}<div class="text-danger small">{{ errors.end_time[0] }}</div>{% endif %}
+        </div>
+        <div class="mb-3">
+            <label for="notes" class="form-label">Notas (opcional)</label>
+            <textarea class="form-control" id="notes" name="notes" rows="3">{{ form.notes|default('') }}</textarea>
+            {% if errors.notes %}<div class="text-danger small">{{ errors.notes[0] }}</div>{% endif %}
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Agendar Sesión</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tutorSelect = document.getElementById('tutor_id');
+    const courseSelect = document.getElementById('course_id');
+    const originalOptions = Array.from(courseSelect.options);
+
+    tutorSelect.addEventListener('change', function() {
+        const tutorId = this.value;
+        // Limpiar cursos
+        courseSelect.innerHTML = '<option value="">Cargando cursos...</option>';
+        if (!tutorId) {
+            // Restaurar todos los cursos si no hay tutor seleccionado
+            courseSelect.innerHTML = '';
+            originalOptions.forEach(opt => courseSelect.appendChild(opt.cloneNode(true)));
+            return;
+        }
+        fetch(`/api/v1/tutores/${tutorId}/cursos`, {
+            headers: { 'Accept': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            courseSelect.innerHTML = '<option value="">Selecciona un curso</option>';
+            if (Array.isArray(data)) {
+                data.forEach(curso => {
+                    const opt = document.createElement('option');
+                    opt.value = curso.id;
+                    opt.textContent = curso.nombre;
+                    courseSelect.appendChild(opt);
+                });
+            } else if (data && data.length === 0) {
+                courseSelect.innerHTML = '<option value="">No hay cursos para este tutor</option>';
+            }
+        })
+        .catch(() => {
+            courseSelect.innerHTML = '<option value="">Error al cargar cursos</option>';
+        });
+    });
+});
+</script>
+{% endblock %} 

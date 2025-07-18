@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\EstudianteApiController;
 use App\Http\Controllers\Api\CursoApiController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\RatingApiController; // <-- NUEVO: Importa el controlador de calificaciones
+use App\Http\Controllers\Api\AcademicSessionApiController; // Importar el nuevo controlador
 
 // Si usas controladores SOAP, asegúrate de que estén correctamente configurados.
 // use App\Http\Controllers\EstudianteSoapController;
@@ -53,12 +54,20 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Rutas de gestión de usuarios (solo para administradores, si aplica)
         Route::apiResource('users', UserController::class);
+        // Ruta para listar tutores
+        Route::get('tutores', [UserController::class, 'tutores']);
+        // Ruta para obtener los cursos de un tutor específico
+        Route::get('tutores/{id}/cursos', [UserController::class, 'cursosPorTutor']);
 
         // Rutas para Calificaciones (Ratings)
         // Estas rutas permitirán a los estudiantes calificar a los tutores.
         Route::post('ratings', [RatingApiController::class, 'store']); // <-- NUEVO: Crear una calificación
         Route::get('ratings', [RatingApiController::class, 'index']);  // <-- NUEVO: Listar calificaciones (puede filtrar)
         Route::get('ratings/{id}', [RatingApiController::class, 'show']); // <-- NUEVO: Ver una calificación específica
+
+        // Rutas para Sesiones Académicas
+        Route::get('academic_sessions', [AcademicSessionApiController::class, 'index']); // Listar sesiones académicas
+        Route::post('academic_sessions', [AcademicSessionApiController::class, 'store']); // Crear sesión académica
 
         // Rutas SOAP (descomentar si están en uso y configuradas)
         // Route::post('/soap', [EstudianteSoapController::class, 'index']);
