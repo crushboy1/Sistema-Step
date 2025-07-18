@@ -3,19 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página de Inicio</title>
+    <title>¡Bienvenido a STEP!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/indexstyles.css') }}">
-
 </head>
 <body>
-    <!-- Contenido de la página -->
-    <div class="container">
-        <h1>Bienvenido al Sitio de Tutoria entre Pares (STEP)</h1>
-        <p>Este sitio te ayudará a encontrar la tutoria que necesitas.</p>
-        
-        <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
-        <div class="text-center mt-3">
-          <a href="{{ url_for('register') }}">¿No tienes cuenta? Regístrate aquí</a>
-        </div> 
+    <!-- Contenedor principal con efecto de fondo animado -->
+    <div class="hero-section">
+        <div class="background-waves">
+            <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="content-wrapper">
+            <!-- Título principal con animación -->
+            <h1 class="animate-fade-in-up">
+                ¡Bienvenido a <span class="step-highlight">STEP</span>!
+            </h1>
+            <!-- Subtítulo y descripción con animaciones de retraso -->
+            <p class="tagline animate-fade-in-up delay-1">
+                Tu puente hacia el conocimiento y el éxito académico.
+            </p>
+            <p class="description animate-fade-in-up delay-2">
+                Encuentra la tutoría perfecta o comparte tu sabiduría.
+                ¡Juntos construimos un futuro más brillante!
+            </p>
+            
+            <!-- Botón de acción con animación y efecto de brillo -->
+            <a href="{{ url_for('login') }}" class="btn-start animate-fade-in-up delay-3">
+                <span class="button-text">Comenzar Ahora</span>
+                <span class="icon-arrow">&#10140;</span> <!-- Flecha derecha -->
+            </a>
+        </div>
+    </div>
 </body>
 </html>
