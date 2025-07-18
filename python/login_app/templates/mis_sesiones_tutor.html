@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Mis Sesiones como Tutor{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Historial de Sesiones como Tutor</h2>
+    {% if sesiones %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Fecha/Hora Inicio</th>
+                        <th>Fecha/Hora Fin</th>
+                        <th>Estudiante</th>
+                        <th>Curso</th>
+                        <th>Estado</th>
+                        <th>Calificación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for sesion in sesiones %}
+                    <tr>
+                        <td>{{ sesion.start_time|default('N/A')|datetimeformat }}</td>
+                        <td>{{ sesion.end_time|default('N/A')|datetimeformat }}</td>
+                        <td>{{ sesion.student.name if sesion.student else 'N/A' }}</td>
+                        <td>{{ sesion.course.nombre if sesion.course else 'N/A' }}</td>
+                        <td>
+                            {% if sesion.end_time %}
+                                <span class="badge bg-success">Finalizada</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">Pendiente</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if sesion.rating %}
+                                <span class="badge bg-info">{{ sesion.rating.rating }} ⭐</span><br>
+                                <small>{{ sesion.rating.comment|default('') }}</small>
+                            {% else %}
+                                <span class="text-muted">Sin calificar</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">No tienes sesiones académicas como tutor registradas.</div>
+    {% endif %}
+</div>
+{% endblock %} 

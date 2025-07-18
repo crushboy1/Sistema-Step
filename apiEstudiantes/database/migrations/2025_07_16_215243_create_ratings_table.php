@@ -19,19 +19,11 @@ return new class extends Migration
             $table->foreignId('student_id')->constrained('users')->onDelete('cascade'); // ID del estudiante que califica, con clave foránea a la tabla 'users'.
             $table->foreignId('tutor_id')->constrained('users')->onDelete('cascade'); // ID del tutor calificado, con clave foránea a la tabla 'users'.
 
-            // *** MODIFICACIÓN CRÍTICA AQUÍ para asegurar compatibilidad con la tabla 'sessions' ***
-            // La columna 'id' en la tabla 'sessions' es un STRING.
-            // Por lo tanto, 'session_id' aquí también debe ser un STRING.
-            $table->string('session_id')->nullable(); // ID de la sesión relacionada, opcional, ahora como STRING.
-
-            // Definimos la clave foránea.
-            // Asegúrate de que la tabla 'sessions' exista antes de añadir esta clave foránea.
-            // En un migrate:fresh, el orden de las migraciones es importante.
-            // Como 'sessions' se crea en tu migración de users (que tiene una marca de tiempo anterior),
-            // esto debería funcionar correctamente.
+            // Cambiar session_id a unsignedBigInteger y apuntar a academic_sessions
+            $table->unsignedBigInteger('session_id')->nullable(); // ID de la sesión académica relacionada, opcional
             $table->foreign('session_id')
                   ->references('id')
-                  ->on('sessions')
+                  ->on('academic_sessions')
                   ->onDelete('set null');
 
             $table->unsignedTinyInteger('rating'); // Valor de la calificación (ej. 1 a 5). unsignedTinyInteger es ideal para esto.

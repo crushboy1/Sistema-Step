@@ -1513,6 +1513,192 @@ def eliminar_usuario(id):
     return redirect(url_for("usuarios"))
 
 
+@app.route('/calificar_tutor/<int:tutor_id>/<int:session_id>', methods=['GET', 'POST'])
+def calificar_tutor(tutor_id, session_id):
+    if request.method == 'GET':
+        return render_template('calificar_tutor.html', tutor_id=tutor_id, session_id=session_id)
+    if 'token' not in session or 'user' not in session:
+        return jsonify({
+            'status': 'error',
+            'message': 'Debes iniciar sesión para calificar.'
+        }), 401
+
+    token = session['token']
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    }
+
+    # Soporta tanto JSON (fetch) como form-data (fallback)
+    if request.is_json:
+        data = request.get_json()
+        rating = data.get('rating')
+        comment = data.get('comment')
+    else:
+        rating = request.form.get('rating')
+        comment = request.form.get('comment')
+
+    # Validación básica
+    errors = {}
+    if not rating or not str(rating).isdigit() or not (1 <= int(rating) <= 5):
+        errors['rating'] = ['La calificación debe ser un número entre 1 y 5.']
+    if comment and len(comment) > 500:
+        errors['comment'] = ['El comentario no puede exceder 500 caracteres.']
+    if errors:
+        return jsonify({'status': 'error', 'message': 'Error de validación', 'errors': errors}), 422
+
+    payload = {
+        'tutor_id': tutor_id,
+        'session_id': session_id,
+        'rating': int(rating),
+        'comment': comment or None
+    }
+
+    try:
+        api_url = f"{API_URL_BASE}/ratings"
+        response = requests.post(api_url, headers=headers, json=payload)
+        api_data = response.json()
+        if response.status_code == 201 and api_data.get('status') == 'success':
+            return jsonify({'status': 'success', 'message': api_data.get('message', 'Calificación enviada con éxito.')})
+        else:
+            # Puede haber errores de validación o de negocio
+            return jsonify({
+                'status': 'error',
+                'message': api_data.get('message', 'Error al enviar la calificación.'),
+                'errors': api_data.get('errors', {})
+            }), response.status_code
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': f'Error de red o del servidor: {str(e)}'}), 500
+
+@app.route('/mis_sesiones')
+def mis_sesiones():
+    if 'token' not in session or 'user' not in session:
+        flash('Por favor, inicia sesión para ver tus sesiones.', 'warning')
+        return redirect(url_for('login'))
+
+    token = session['token']
+    current_user = session['user']
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Accept': 'application/json'
+    }
+    # Solo estudiantes pueden ver su historial
+    if not any(r.get('name') == 'estudiante' for r in current_user.get('roles', [])):
+        flash('Solo los estudiantes pueden ver su historial de sesiones.', 'danger')
+        return redirect(url_for('cursos'))
+
+    # Consultar sesiones académicas del estudiante
+    try:
+        api_url = f"{API_URL_BASE}/academic_sessions?student_id={current_user['id']}"
+        response = requests.get(api_url, headers=headers)
+        if response.status_code == 200:
+            data = response.json()
+            sesiones = data.get('data', [])
+        else:
+            flash('No se pudo obtener el historial de sesiones.', 'danger')
+            sesiones = []
+    except Exception as e:
+        flash(f'Error al conectar con la API: {e}', 'danger')
+        sesiones = []
+
+    return render_template('mis_sesiones.html', sesiones=sesiones, current_user=current_user)
+
+@app.route('/agendar_sesion', methods=['GET', 'POST'])
+def agendar_sesion():
+    if 'token' not in session or 'user' not in session:
+        flash('Por favor, inicia sesión para agendar una sesión.', 'warning')
+        return redirect(url_for('login'))
+    token = session['token']
+    current_user = session['user']
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Accept': 'application/json'
+    }
+    # Solo estudiantes o tutores pueden agendar
+    roles = [r.get('name') for r in current_user.get('roles', [])]
+    if not ('estudiante' in roles or 'tutor' in roles):
+        flash('Solo estudiantes o tutores pueden agendar sesiones.', 'danger')
+        return redirect(url_for('cursos'))
+
+    # Obtener lista de tutores y cursos para el formulario
+    tutores, cursos = [], []
+    try:
+        # Obtener todos los tutores
+        resp_tutores = requests.get(f"{API_URL_BASE}/tutores", headers=headers)
+        if resp_tutores.status_code == 200:
+            tutores = resp_tutores.json()
+        # Obtener todos los cursos
+        resp_cursos = requests.get(f"{API_URL_BASE}/cursos", headers=headers)
+        if resp_cursos.status_code == 200:
+            cursos = resp_cursos.json() if isinstance(resp_cursos.json(), list) else resp_cursos.json().get('data', [])
+    except Exception as e:
+        flash(f'Error al obtener tutores o cursos: {e}', 'danger')
+
+    if request.method == 'POST':
+        # Recoger datos del formulario
+        student_id = current_user['id'] if 'estudiante' in roles else request.form.get('student_id')
+        tutor_id = request.form.get('tutor_id')
+        course_id = request.form.get('course_id')
+        start_time = request.form.get('start_time')
+        end_time = request.form.get('end_time')
+        notes = request.form.get('notes')
+        payload = {
+            'student_id': student_id,
+            'tutor_id': tutor_id,
+            'course_id': course_id,
+            'start_time': start_time,
+            'end_time': end_time or None,
+            'notes': notes or None
+        }
+        post_headers = headers.copy()
+        post_headers['Content-Type'] = 'application/json'
+        try:
+            resp = requests.post(f"{API_URL_BASE}/academic_sessions", headers=post_headers, json=payload)
+            data = resp.json()
+            if resp.status_code == 201 and data.get('status') == 'success':
+                flash('Sesión académica agendada exitosamente.', 'success')
+                return redirect(url_for('mis_sesiones'))
+            else:
+                errors = data.get('errors', {})
+                flash(data.get('message', 'Error al agendar la sesión.'), 'danger')
+                return render_template('agendar_sesion.html', tutores=tutores, cursos=cursos, errors=errors, form=request.form)
+        except Exception as e:
+            flash(f'Error al conectar con la API: {e}', 'danger')
+            return render_template('agendar_sesion.html', tutores=tutores, cursos=cursos, errors={}, form=request.form)
+
+    return render_template('agendar_sesion.html', tutores=tutores, cursos=cursos, errors={}, form={})
+
+@app.route('/mis_sesiones_tutor')
+def mis_sesiones_tutor():
+    if 'token' not in session or 'user' not in session:
+        flash('Por favor, inicia sesión para ver tus sesiones como tutor.', 'warning')
+        return redirect(url_for('login'))
+    token = session['token']
+    current_user = session['user']
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Accept': 'application/json'
+    }
+    # Solo tutores pueden ver su historial de sesiones como tutor
+    if not any(r.get('name') == 'tutor' for r in current_user.get('roles', [])):
+        flash('Solo los tutores pueden ver su historial de sesiones como tutor.', 'danger')
+        return redirect(url_for('cursos'))
+    # Consultar sesiones académicas donde el usuario es tutor
+    try:
+        api_url = f"{API_URL_BASE}/academic_sessions?tutor_id={current_user['id']}"
+        response = requests.get(api_url, headers=headers)
+        if response.status_code == 200:
+            data = response.json()
+            sesiones = data.get('data', [])
+        else:
+            flash('No se pudo obtener el historial de sesiones como tutor.', 'danger')
+            sesiones = []
+    except Exception as e:
+        flash(f'Error al conectar con la API: {e}', 'danger')
+        sesiones = []
+    return render_template('mis_sesiones_tutor.html', sesiones=sesiones, current_user=current_user)
+
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1', port=5000)
 
