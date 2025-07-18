@@ -1,28 +1,30 @@
 {% extends "base.html" %}
 
-{% block title %}Nuevo Usuario{% endblock %}
+{% block title %}Crear Nuevo Usuario{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
                     <h3 class="card-title mb-0">Crear Nuevo Usuario</h3>
                 </div>
                 <div class="card-body">
-                    <form method="POST">
+                    <form id="nuevoUsuarioForm" method="POST">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="name" class="form-label">Nombre <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="name" name="name" value="{{ data.name if data else '' }}" required autocomplete="given-name">
+                                    <div class="invalid-feedback" id="name-error"></div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="last_name" class="form-label">Apellido <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="last_name" name="last_name" value="{{ data.last_name if data else '' }}" required autocomplete="family-name">
+                                    <div class="invalid-feedback" id="last_name-error"></div>
                                 </div>
                             </div>
                         </div>
@@ -32,12 +34,14 @@
                                 <div class="mb-3">
                                     <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
                                     <input type="email" class="form-control" id="email" name="email" value="{{ data.email if data else '' }}" required autocomplete="email">
+                                    <div class="invalid-feedback" id="email-error"></div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="number" class="form-label">Número de Teléfono <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="number" name="number" value="{{ data.number if data else '' }}" required autocomplete="tel">
+                                    <div class="invalid-feedback" id="number-error"></div>
                                 </div>
                             </div>
                         </div>
@@ -45,33 +49,42 @@
                         <div class="mb-3">
                             <label for="password" class="form-label">Contraseña <span class="text-danger">*</span></label>
                             <input type="password" class="form-control" id="password" name="password" required minlength="8" autocomplete="new-password">
-                            <!-- INSTRUCCIÓN PARA ADMIN: -->
                             <div class="form-text">
                                 La contraseña debe tener al menos 8 caracteres, incluir mayúscula, minúscula, número y símbolo.<br>
                                 <strong>Ejemplo seguro:</strong> <code>Prueba2024!</code>
                             </div>
+                            <div class="invalid-feedback" id="password-error"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password_confirmation" class="form-label">Confirmar Contraseña <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required autocomplete="new-password">
+                            <div class="invalid-feedback" id="password_confirmation-error"></div>
                         </div>
                         
                         <div class="mb-3">
                             <label class="form-label">Roles <span class="text-danger">*</span></label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="roles" value="administrador" id="role_admin" {% if data and 'administrador' in data.role_names %}checked{% endif %}>
-                                <label class="form-check-label" for="role_admin">
-                                    Administrador
-                                </label>
+                            <div id="roles-container">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="roles" value="administrador" id="role_admin" {% if data and 'administrador' in data.role_names %}checked{% endif %}>
+                                    <label class="form-check-label" for="role_admin">
+                                        Administrador
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="roles" value="tutor" id="role_tutor" {% if data and 'tutor' in data.role_names %}checked{% endif %}>
+                                    <label class="form-check-label" for="role_tutor">
+                                        Tutor
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="roles" value="estudiante" id="role_estudiante" {% if data and 'estudiante' in data.role_names %}checked{% endif %}>
+                                    <label class="form-check-label" for="role_estudiante">
+                                        Estudiante
+                                    </label>
+                                </div>
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="roles" value="tutor" id="role_tutor" {% if data and 'tutor' in data.role_names %}checked{% endif %}>
-                                <label class="form-check-label" for="role_tutor">
-                                    Tutor
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="roles" value="estudiante" id="role_estudiante" {% if data and 'estudiante' in data.role_names %}checked{% endif %}>
-                                <label class="form-check-label" for="role_estudiante">
-                                    Estudiante
-                                </label>
-                            </div>
+                            <div class="invalid-feedback" id="roles-error"></div>
                         </div>
                         
                         <div class="d-flex justify-content-between">
@@ -93,4 +106,128 @@
         </div>
     </div>
 </div>
-{% endblock %} 
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('nuevoUsuarioForm');
+
+    function clearErrors() {
+        document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+        document.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
+        document.querySelectorAll('.is-invalid-group').forEach(el => el.classList.remove('is-invalid-group')); // Clear group errors
+    }
+
+    // Función para mostrar alertas (reutilizada de base.html)
+    function showAlert(message, type) {
+        document.querySelectorAll('.custom-alert').forEach(alert => alert.remove());
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show custom-alert`;
+        alertDiv.style.position = 'fixed';
+        alertDiv.style.top = '70px'; /* Ajustado a la posición de los flash messages */
+        alertDiv.style.right = '20px';
+        alertDiv.style.zIndex = '1060'; /* Asegurarse de que esté por encima de todo */
+        alertDiv.style.minWidth = '300px';
+        alertDiv.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.body.appendChild(alertDiv);
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+
+    form.addEventListener('submit', async function(event) {
+        event.preventDefault(); // Prevenir el envío tradicional del formulario
+        clearErrors(); // Limpiar errores previos
+
+        const submitButton = form.querySelector('button[type="submit"]');
+        const originalButtonHtml = submitButton.innerHTML;
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Creando...';
+
+        const formData = new FormData(form);
+        const payload = {};
+        formData.forEach((value, key) => {
+            if (key === 'roles') {
+                if (!payload[key]) {
+                    payload[key] = [];
+                }
+                payload[key].push(value);
+            } else {
+                payload[key] = value;
+            }
+        });
+
+        // Asegurarse de que 'role_names' sea una lista, incluso si no se selecciona ninguno
+        // Laravel espera 'role_names' como array
+        payload['role_names'] = payload['roles'] || [];
+        delete payload['roles']; // Eliminar la clave temporal 'roles'
+
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest' // Indicar que es una petición AJAX
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                showAlert(result.message, 'success');
+                // Redirigir a la lista de usuarios o donde sea apropiado
+                setTimeout(() => {
+                    window.location.href = "{{ url_for('usuarios') }}";
+                }, 1500);
+            } else {
+                showAlert(result.message || 'Error al crear usuario.', 'danger');
+                if (result.errors) {
+                    for (const field in result.errors) {
+                        const inputElement = document.getElementById(field);
+                        const errorElement = document.getElementById(`${field}-error`);
+                        
+                        // Manejo especial para errores de roles
+                        if (field === 'role_names' || field === 'roles') { // Laravel puede devolver 'role_names' o 'roles'
+                            const rolesContainer = document.getElementById('roles-container');
+                            const rolesErrorElement = document.getElementById('roles-error');
+                            if (rolesContainer && rolesErrorElement) {
+                                rolesContainer.classList.add('is-invalid-group'); // Clase para estilos de grupo
+                                rolesErrorElement.textContent = result.errors[field][0];
+                            }
+                        } else if (inputElement && errorElement) {
+                            inputElement.classList.add('is-invalid');
+                            errorElement.textContent = result.errors[field][0];
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error de red o del servidor:', error);
+            showAlert(`Error: ${error.message || 'Error de red o del servidor'}`, 'danger');
+        } finally {
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalButtonHtml;
+        }
+    });
+});
+</script>
+<style>
+/* Estilo para el grupo de checkboxes si hay error */
+.is-invalid-group {
+    border: 1px solid var(--bs-danger);
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+}
+.is-invalid-group + .invalid-feedback {
+    display: block; /* Asegura que el mensaje de error se muestre */
+}
+</style>
+{% endblock %}

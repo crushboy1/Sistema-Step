@@ -3,8 +3,8 @@
 
 /* Definición de variables CSS para colores y valores comunes */
 :root {
-    --primary-gradient-start: #4A00E0; /* Morado oscuro */
-    --primary-gradient-end: #8E2DE2;   /* Morado claro */
+    --primary-gradient-start: #2b78c0; /* Morado oscuro */
+    --primary-gradient-end: #4138bd;   /* Morado claro */
     --secondary-color: #00D4FF;        /* Azul cielo brillante para resaltar */
     --accent-color: #FF6B6B;           /* Rojo coral para acentos */
     --text-light: #ECF0F1;             /* Texto claro */

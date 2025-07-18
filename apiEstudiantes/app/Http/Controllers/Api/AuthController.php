@@ -29,7 +29,7 @@ class AuthApiController extends Controller
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|unique:users',
-                'password' => 'required|min:6|confirmed',
+                'password' => 'required|min:6|password_confirmation',
                 // Puedes añadir 'last_name' y 'number' aquí si los usas en el registro
                 // 'last_name' => 'required|string|max:255',
                 // 'number' => 'required|string|max:20',

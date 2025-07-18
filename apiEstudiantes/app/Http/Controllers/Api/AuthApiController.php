@@ -25,7 +25,12 @@ class AuthApiController extends Controller
     public function register(Request $request)
     {
         Log::info('Inicio del proceso de registro.');
-        Log::info('Datos recibidos para registro.', $request->all());
+    Log::info('Datos recibidos para registro.', $request->all());
+
+    // --- AÑADE ESTAS LÍNEAS PARA DEPURACIÓN ---
+    Log::info('Contenido de password: ' . $request->input('password'));
+    Log::info('Contenido de password_confirmation: ' . $request->input('password_confirmation'));
+    // --- FIN DE LÍNEAS DE DEPURACIÓN ---
 
         try {
             // 1. Validación de los datos de entrada
