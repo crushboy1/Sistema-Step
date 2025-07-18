@@ -1405,7 +1405,8 @@ def nuevo_usuario():
             "number": request.form.get("number"),
             "email": request.form.get("email"),
             "password": request.form.get("password"),
-            "role_names": request.form.getlist("roles")  # Lista de roles seleccionados
+            "password_confirmation": request.form.get("password_confirmation"),  # <-- ¡IMPORTANTE!
+            "role_names": request.form.getlist("roles")
         }
         
         try:
